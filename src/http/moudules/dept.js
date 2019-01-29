@@ -5,25 +5,34 @@ import axios from '../axios'
  */
 
 // 保存
-export const save = (data) => {
+export const saveOrEdit = (params) => {
     return axios({
-        url: '/dept/save',
+        url: '/sys/coreDept/saveOrEdit',
         method: 'post',
-        data
+        params
     })
 }
 // 删除
-export const batchDelete = (data) => {
+export const del = (params) => {
     return axios({
-        url: '/dept/delete',
-        method: 'post',
-        data
+        url: '/sys/coreDept/delete',
+        method: 'delete',
+        params
+    })
+}
+// 查询机构
+export const find = (params) => {
+    return axios({
+        url: '/sys/coreDept/find',
+        method: 'get',
+        params
     })
 }
 // 查询机构树
-export const findDeptTree = () => {
+export const findDeptTree = (params) => {
     return axios({
-        url: '/dept/findTree',
-        method: 'get'
+        url: '/sys/coreDept/findTree',
+        method: 'get',
+        params
     })
 }

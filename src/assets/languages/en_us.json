@@ -19,6 +19,7 @@
         "add": "Add",
         "edit": "Edit",
         "delete": "Delete",
+        "view": "View",
         "batchDelete": "Batch Delete",
         "search": "Search",
         "loading": "loading",

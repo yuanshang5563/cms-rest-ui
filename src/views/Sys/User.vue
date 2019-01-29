@@ -4,10 +4,20 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
-				<el-input v-model="filters.name" placeholder="用户名"></el-input>
+				<el-input v-model="filters.userName" placeholder="真实姓名"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage(null)"/>
+				<el-input v-model="filters.realName" placeholder="用户名"></el-input>
+			</el-form-item>			
+			<el-form-item>
+				<el-select v-model="filters.sex" clearable placeholder="性别">
+					<el-option label="未知" value="sex.0"></el-option>
+					<el-option label="男" value="sex.1"></el-option>
+					<el-option label="女" value="sex.2"></el-option>
+				</el-select>
+			</el-form-item>				
+			<el-form-item>
+				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage()"/>
 			</el-form-item>
 			<el-form-item>
 				<kt-button :label="$t('action.add')" perms="sys:user:add" type="primary" @click="handleAdd" />
@@ -15,51 +25,93 @@
 		</el-form>
 	</div>
 	<!--表格内容栏-->
-	<kt-table permsEdit="sys:user:edit" permsDelete="sys:user:delete"
-		:data="pageResult" :columns="columns"
-		@findPage="findPage" @handleEdit="handleEdit" @handleDelete="handleDelete">
-	</kt-table>
+	<!--表格栏-->
+	<el-table :data="pageResult" :highlight-current-row="true" @selection-change="selectionChange"
+		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
+		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
+	<el-table-column type="index" width="60" label="序号"></el-table-column>
+	<el-table-column prop="userName" label="用户名" sortable="true"></el-table-column>
+	<el-table-column prop="realName" label="真实姓名" sortable="true"></el-table-column>
+	<el-table-column prop="sex" label="性别" sortable="true"></el-table-column>
+	<el-table-column prop="birthday" label="生日" sortable="true" :formatter="birthdayFormat"></el-table-column>
+	<el-table-column prop="mobile" label="手机" sortable="true"></el-table-column>
+	<el-table-column prop="email" label="邮箱" sortable="true" width="220"></el-table-column>
+	<el-table-column prop="status" label="是否禁用" sortable="true"></el-table-column>
+	<el-table-column prop="createdTime" label="创建时间" sortable="true" :formatter="dateFormat"></el-table-column>
+	<el-table-column prop="modifiedTime" label="修改时间" sortable="true" :formatter="dateFormat"></el-table-column>
+	<el-table-column :label="$t('action.operation')" width="240" fixed="right" header-align="center" align="center">
+		<template slot-scope="scope">
+		<kt-button :label="$t('action.edit')" perms="sys:role:add" :size="size" @click="handleEdit(scope.row)" />
+		<kt-button :label="$t('action.delete')" perms="sys:role:del" :size="size" type="danger" @click="handleDelete(scope.row)" />
+		<kt-button :label="$t('action.view')" perms="sys:role:view" :size="size" @click="handleView(scope.row)" />
+		</template>
+	</el-table-column>
+	</el-table>
+	<!--分页栏-->
+	<div class="toolbar" style="padding:10px;">
+	<el-pagination layout="total, prev, pager, next, jumper" @current-change="refreshPageRequest" 
+		:current-page="pageRequest.pageNum" :page-size="pageRequest.pageSize" :total="total" style="float:right;">
+	</el-pagination>
+	</div>
 	<!--新增编辑界面-->
-	<el-dialog :title="operation?'新增':'编辑'" width="40%" :visible.sync="dialogVisible" :close-on-click-modal="false">
-		<el-form :model="dataForm" label-width="80px" :rules="dataFormRules" ref="dataForm" :size="size"
-			label-position="right">
-			<el-form-item label="ID" prop="id" v-if="false">
-				<el-input v-model="dataForm.id" :disabled="true" auto-complete="off"></el-input>
+	<el-dialog :title="dialogTitle" width="40%" :visible.sync="dialogVisible" :close-on-click-modal="false">
+		<el-form :model="dataForm" label-width="80px" :rules="dataFormRules" ref="dataForm" :size="size" label-position="right">
+			<el-form-item label="用户名" prop="userName">
+				<el-input v-model="dataForm.userName" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>
-			<el-form-item label="用户名" prop="name">
-				<el-input v-model="dataForm.name" auto-complete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="密码" prop="password">
+			<el-form-item label="密码" prop="password" v-show="dialogTitle=='新增'">
 				<el-input v-model="dataForm.password" type="password" auto-complete="off"></el-input>
 			</el-form-item>
+			<el-form-item label="真实姓名" prop="realName">
+				<el-input v-model="dataForm.realName" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>	
+			<el-form-item label="性别" prop="sex">
+				<el-select v-model="dataForm.sex" clearable placeholder="请选择" style="width:100%" :disabled="viewFlag">
+					<el-option label="未知" value="sex.0"></el-option>
+					<el-option label="男" value="sex.1"></el-option>
+					<el-option label="女" value="sex.2"></el-option>
+				</el-select>
+			</el-form-item>	
+			<el-form-item label="生日" prop="birthday">
+    			<el-date-picker v-model="dataForm.birthday" type="date" format="yyyy-MM-dd" placeholder="选择日期" style="width:100%" :readonly="viewFlag"></el-date-picker>
+			</el-form-item>								
 			<el-form-item label="机构" prop="deptName">
 				<popup-tree-input 
 					:data="deptData" 
 					:props="deptTreeProps" 
 					:prop="dataForm.deptName" 
-					:nodeKey="''+dataForm.deptId" 
-					:currentChangeHandle="deptTreeCurrentChangeHandle">
+					:nodeKey="''+dataForm.coreDeptId" 
+					:currentChangeHandle="deptTreeCurrentChangeHandle" 
+					:disabled="viewFlag">
 				</popup-tree-input>
 			</el-form-item>
 			<el-form-item label="邮箱" prop="email">
-				<el-input v-model="dataForm.email" auto-complete="off"></el-input>
+				<el-input v-model="dataForm.email" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>
 			<el-form-item label="手机" prop="mobile">
-				<el-input v-model="dataForm.mobile" auto-complete="off"></el-input>
+				<el-input v-model="dataForm.mobile" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>
-			<el-form-item label="角色" prop="userRoles" v-if="!operation">
-				<el-select v-model="dataForm.userRoles" multiple placeholder="请选择"
-					 style="width: 100%;">
-					<el-option v-for="item in roles" :key="item.id"
-						:label="item.remark" :value="item.id">
-					</el-option>
+			<el-form-item label="是否禁用" prop="status">
+				<el-select v-model="dataForm.status" clearable placeholder="请选择" style="width:100%" :disabled="viewFlag">
+					<el-option label="激活" value="0"></el-option>
+					<el-option label="禁用" value="1"></el-option>
+				</el-select>
+			</el-form-item>				
+			<el-form-item label="角色" prop="userRoles">
+				<el-select v-model="dataForm.userRoles" multiple placeholder="请选择" style="width: 100%;" :disabled="viewFlag">
+					<el-option v-for="item in roles" :key="item.coreRoleId" :label="item.roleName" :value="item.coreRoleId"></el-option>
 				</el-select>
 			</el-form-item>
-			
+			<el-form-item label="创建时间" prop="createdTime" v-show="viewFlag">
+				<el-date-picker v-model="dataForm.createdTime" type="datetime" auto-complete="off" style="width:100%" :readonly="true"></el-date-picker>
+			</el-form-item>
+			<el-form-item label="修改时间" prop="modifiedTime" v-show="viewFlag">
+				<el-date-picker v-model="dataForm.modifiedTime" type="datetime" auto-complete="off" style="width:100%" :readonly="true"></el-date-picker>
+			</el-form-item>				
 		</el-form>
 		<div slot="footer" class="dialog-footer">
 			<el-button :size="size" @click.native="dialogVisible = false">{{$t('action.cancel')}}</el-button>
-			<el-button :size="size" type="primary" @click.native="submitForm" :loading="editLoading">{{$t('action.submit')}}</el-button>
+			<el-button :size="size" type="primary" @click.native="submitForm" :loading="editLoading" v-show="!viewFlag">{{$t('action.submit')}}</el-button>
 		</div>
 	</el-dialog>
   </div>
@@ -67,60 +119,95 @@
 
 <script>
 import PopupTreeInput from "@/components/PopupTreeInput"
-import KtTable from "@/views/Core/KtTable"
 import KtButton from "@/views/Core/KtButton"
-import { format } from "@/utils/datetime"
+import { format,formatDate } from "@/utils/datetime"
+import { isEmail,isMobile } from "@/utils/validate"
 export default {
 	components:{
 		PopupTreeInput,
-		KtTable,
 		KtButton
 	},
 	data() {
+		var validateMobile = (rule, value, callback) => {
+			if (value === '') {
+				callback(new Error('请输入手机'));
+			} else if (!isMobile(this.dataForm.mobile)){
+				callback(new Error('手机号码格式错误'));
+			} else {
+				callback();
+			}
+		};	
+		var validateEmail = (rule, value, callback) => {
+			if (value === '') {
+				callback(new Error('请输入邮箱'));
+			} else if (!isEmail(this.dataForm.email)){
+				callback(new Error('邮箱格式错误'));
+			} else {
+				callback();
+			}
+		};				
 		return {
 			size: 'small',
 			filters: {
-				name: ''
+				userName: '',
+				sex: '',
+				realName: ''
 			},
-			columns: [
-				{prop:"id", label:"ID", minWidth:50},
-				{prop:"name", label:"用户名", minWidth:120},
-				{prop:"deptName", label:"机构", minWidth:120},
-				{prop:"roleNames", label:"角色", minWidth:100},
-				{prop:"email", label:"邮箱", minWidth:120},
-				{prop:"mobile", label:"手机", minWidth:100},
-				{prop:"status", label:"状态", minWidth:70},
-				// {prop:"createBy", label:"创建人", minWidth:120},
-				// {prop:"createTime", label:"创建时间", minWidth:120, formatter:this.dateFormat}
-				// {prop:"lastUpdateBy", label:"更新人", minWidth:100},
-				// {prop:"lastUpdateTime", label:"更新时间", minWidth:120, formatter:this.dateFormat}
-			],
-			pageRequest: { pageNum: 1, pageSize: 8 },
-			pageResult: {},
-
-			operation: false, // true:新增, false:编辑
+			pageRequest: { pageNum: 1, pageSize: 10 },
+			total: 0,
+			pageResult: [],
+			loading: false, //加载标志
+			dialogTitle: "", // 新增, 编辑，查看
 			dialogVisible: false, // 新增编辑界面是否显示
 			editLoading: false,
+			viewFlag: false,//查看标志
 			dataFormRules: {
-				name: [
+				userName: [
 					{ required: true, message: '请输入用户名', trigger: 'blur' }
+				],
+				password: [
+					{ required: true, message: '请输入密码', trigger: 'blur' }
+				],				
+				realName: [
+					{ required: true, message: '请输入姓名', trigger: 'blur' }
+				],
+				sex: [
+					{ required: true, message: '请选择性别', trigger: 'blur' }
+				],
+				deptName: [
+					{ required: true, message: '请选择机构', trigger: 'blur' }
+				],
+				mobile: [
+					{ validator: validateMobile, trigger: 'blur' }
+				],
+				email: [
+					{ validator: validateEmail, trigger: 'blur' }
+				],				
+				status: [
+					{ required: true, message: '请选择激活状态', trigger: 'blur' }
 				]
 			},
 			// 新增编辑界面数据
 			dataForm: {
-				id: 0,
-				name: '',
-				password: '123456',
-				deptId: 1,
+				coreUserId: 0,
+				userName: '',
+				password: '',
+				realName: '',
+				sex: 'sex.0',
+				birthday: null,
+				mobile: '',
+				email: '',
+				comment: '',
+				status: '0',
+				coreDeptId: null,
+				createdTime: null,
+				modifiedTime: null,
 				deptName: '',
-				email: 'test@qq.com',
-				mobile: '13889700023',
-				status: 1,
 				userRoles: []
 			},
 			deptData: [],
 			deptTreeProps: {
-				label: 'name',
+				label: 'deptName',
 				children: 'children'
 			},
 			roles: []
@@ -129,15 +216,24 @@ export default {
 	methods: {
 		// 获取分页数据
 		findPage: function (data) {
-			if(data !== null) {
-				this.pageRequest = data.pageRequest
-			}
-			this.pageRequest.columnFilters = {name: {name:'name', value:this.filters.name}}
-			this.$api.user.findPage(this.pageRequest).then((res) => {
-				this.pageResult = res.data
+			this.loading = true;
+			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,userName:this.filters.userName,realName:this.filters.realName,sex:this.filters.sex};
+			this.$api.user.findPage(param).then((res) => {
+				this.loading = false;
+				this.pageResult = res.data.list;
+				this.total= res.data.total
 				this.findUserRoles()
 			}).then(data!=null?data.callback:'')
 		},
+		// 选择切换
+		selectionChange: function (selections) {
+			this.selections = selections
+		},		
+		// 换页刷新
+		refreshPageRequest: function (pageNum) {
+			this.pageRequest.pageNum = pageNum
+			this.findPage()
+		},		
 		// 加载用户角色信息
 		findUserRoles: function () {
 			this.$api.role.findAll().then((res) => {
@@ -145,55 +241,88 @@ export default {
 				this.roles = res.data	
 			})
 		},
-		// 批量删除
-		handleDelete: function (data) {
-			this.$api.user.batchDelete(data.params).then(data!=null?data.callback:'')
+		// 删除
+		handleDelete: function (row) {
+			this.$confirm("确认删除选中记录吗？", "提示", {
+				type: "warning"
+			}).then(() => {
+				this.$api.user.del({coreUserId:row.coreUserId}).then(res => {
+				this.findPage();
+				this.$message({ message: "删除成功", type: "success" });
+				});
+			});				
 		},
 		// 显示新增界面
 		handleAdd: function () {
 			this.dialogVisible = true
-			this.operation = true
+			this.dialogTitle = "新增"
+			this.viewFlag = false;
 			this.dataForm = {
-				id: 0,
-				name: '',
+				coreUserId: 0,
+				userName: '',
 				password: '',
-				deptId: 1,
+				realName: '',
+				sex: 'sex.0',
+				birthday: null,
+				mobile: '',
+				email: '',
+				comment: '',
+				status: '0',
+				coreDeptId: null,
+				createdTime: new Date(),
+				modifiedTime: new Date(),
 				deptName: '',
-				email: 'test@qq.com',
-				mobile: '13889700023',
-				status: 1,
 				userRoles: []
 			}
 		},
 		// 显示编辑界面
-		handleEdit: function (params) {
+		handleEdit: function (row) {
 			this.dialogVisible = true
-			this.operation = false
-			this.dataForm = Object.assign({}, params.row)
-			let userRoles = []
-			for(let i=0,len=params.row.userRoles.length; i<len; i++) {
-				userRoles.push(params.row.userRoles[i].roleId)
-			}
-			this.dataForm.userRoles = userRoles
+			this.dialogTitle = "编辑"
+			this.viewFlag = false;
+			let _this = this;
+			this.$api.user.find({coreUserId:row.coreUserId}).then(res => {
+				Object.assign(_this.dataForm, res.data);
+				let userRoles = []
+				for(let i=0,len=res.data.userRoles.length; i<len; i++) {
+					userRoles.push(res.data.userRoles[i].coreRoleId)
+				}
+				this.dataForm.userRoles = userRoles;				
+			});	
 		},
+		// 显示查看界面
+		handleView: function (row) {
+			this.dialogVisible = true
+			this.dialogTitle = "查看"
+			this.viewFlag = true;
+			let _this = this;
+			this.$api.user.find({coreUserId:row.coreUserId}).then(res => {
+				Object.assign(_this.dataForm, res.data);
+				let userRoles = []
+				for(let i=0,len=res.data.userRoles.length; i<len; i++) {
+					userRoles.push(res.data.userRoles[i].coreRoleId)
+				}
+				this.dataForm.userRoles = userRoles;
+			});	
+		},		
 		// 编辑
 		submitForm: function () {
 			this.$refs.dataForm.validate((valid) => {
 				if (valid) {
 					this.$confirm('确认提交吗？', '提示', {}).then(() => {
-						this.editLoading = true
-						let params = Object.assign({}, this.dataForm)
-						let userRoles = []
+						this.editLoading = true;
+						let params = Object.assign({}, this.dataForm);
+						let userRoles = [];
 						for(let i=0,len=params.userRoles.length; i<len; i++) {
 							let userRole = {
-								userId: params.id,
-								roleId: params.userRoles[i]
-							}
-							userRoles.push(userRole)
+								coreUserId: params.coreUserId,
+								coreRoleId: params.userRoles[i]
+							};
+							userRoles.push(userRole);
 						}
-						params.userRoles = userRoles
-						this.$api.user.save(params).then((res) => {
-							this.editLoading = false
+						//params.birthday=formatDate(params.birthday);
+						params.userRoles = userRoles;
+						this.$api.user.saveOrEdit(params).then((res) => {
 							if(res.code == 200) {
 								this.$message({ message: '操作成功', type: 'success' })
 								this.dialogVisible = false
@@ -201,8 +330,9 @@ export default {
 							} else {
 								this.$message({message: '操作失败, ' + res.msg, type: 'error'})
 							}
-							this.findPage(null)
-						})
+							this.findPage();
+						});
+						this.editLoading = false;
 					})
 				}
 			})
@@ -215,15 +345,20 @@ export default {
 		},
 		// 菜单树选中
       	deptTreeCurrentChangeHandle (data, node) {
-        	this.dataForm.deptId = data.id
-        	this.dataForm.deptName = data.name
+        	this.dataForm.coreDeptId = data.coreDeptId
+        	this.dataForm.deptName = data.deptName
 		},
 		// 时间格式化
       	dateFormat: function (row, column, cellValue, index){
           	return format(row[column.property])
+      	},
+		// 时间格式化
+      	birthdayFormat: function (row, column, cellValue, index){
+          	return formatDate(row[column.property])
       	}
 	},
 	mounted() {
+		this.findPage();
 		this.findDeptTree()
 	}
 }

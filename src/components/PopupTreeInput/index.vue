@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-popover ref="popover" :placement="placement" trigger="click">
+    <el-popover ref="popover" :placement="placement" trigger="click" :disabled="disabled">
       <el-tree
         :data="data"
         :props="props"
@@ -51,7 +51,11 @@ export default {
     currentChangeHandle: {
       type: Function,
       default: null
-    }
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }    
   }
 }
 </script>

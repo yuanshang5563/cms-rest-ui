@@ -5,33 +5,41 @@ import axios from '../axios'
  */
 
 // 保存
-export const save = (data) => {
+export const saveOrEdit = (data) => {
     return axios({
-        url: '/user/save',
+        url: '/sys/coreUser/saveOrEdit',
         method: 'post',
         data
     })
 }
 // 删除
-export const batchDelete = (data) => {
+export const del = (params) => {
     return axios({
-        url: '/user/delete',
-        method: 'post',
-        data
+        url: '/sys/coreUser/delete',
+        method: 'delete',
+        params
     })
 }
 // 分页查询
 export const findPage = (data) => {
     return axios({
-        url: '/user/findPage',
+        url: '/sys/coreUser/findPage',
         method: 'post',
         data
+    })
+}
+// 查找用户
+export const find = (params) => {
+    return axios({
+        url: '/sys/coreUser/find',
+        method: 'get',
+        params
     })
 }
 // 查找用户的菜单权限标识集合
 export const findPermissions = (params) => {
     return axios({
-        url: '/user/findPermissions',
+        url: '/sys/coreUser/findPermissions',
         method: 'get',
         params
     })

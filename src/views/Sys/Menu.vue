@@ -4,10 +4,10 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
-				<el-input v-model="filters.name" placeholder="名称"></el-input>
+				<el-input v-model="filters.menuName" placeholder="名称"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:menu:view" type="primary" @click="findTreeData(null)"/>
+				<kt-button :label="$t('action.search')" perms="sys:menu:view" type="primary" @click="findTreeData()"/>
 			</el-form-item>
 			<el-form-item>
 				<kt-button :label="$t('action.add')" perms="sys:menu:add" type="primary" @click="handleAdd"/>
@@ -16,72 +16,59 @@
 	</div>
 	<!--表格树内容栏-->
     <el-table :data="tableTreeDdata" stripe size="mini" style="width: 100%;"
-      v-loading="loading" element-loading-text="$t('action.loading')">
-      <el-table-column
-        prop="id" header-align="center" align="center" width="80" label="ID">
-      </el-table-column>
-      <table-tree-column 
-        prop="name" header-align="center" treeKey="id" width="150" label="名称">
-      </table-tree-column>
+      v-loading="loading" :element-loading-text="$t('action.loading')">
+      <el-table-column prop="coreMenuId" header-align="center" align="center" width="80" label="ID"></el-table-column>
+      <table-tree-column prop="menuName" header-align="center" treeKey="coreMenuId" parentKey="parentCoreMenuId" width="150" label="名称"></table-tree-column>
       <el-table-column header-align="center" align="center" label="图标">
         <template slot-scope="scope">
           <i :class="scope.row.icon || ''"></i>
         </template>
       </el-table-column>
-      <el-table-column prop="type" header-align="center" align="center" label="类型">
+      <el-table-column prop="menuType" header-align="center" align="center" label="类型">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.type === 0" size="small">目录</el-tag>
-          <el-tag v-else-if="scope.row.type === 1" size="small" type="success">菜单</el-tag>
-          <el-tag v-else-if="scope.row.type === 2" size="small" type="info">按钮</el-tag>
+          <el-tag v-if="scope.row.menuType == '0'" size="small">目录</el-tag>
+          <el-tag v-else-if="scope.row.menuType == '1'" size="small" type="success">菜单</el-tag>
+          <el-tag v-else-if="scope.row.menuType == '2'" size="small" type="info">按钮</el-tag>
         </template>
       </el-table-column>
-      <el-table-column 
-        prop="parentName" header-align="center" align="center" width="120" label="上级菜单">
-      </el-table-column>
-      <el-table-column
-        prop="url" header-align="center" align="center" width="150" 
-        :show-overflow-tooltip="true" label="菜单URL">
-      </el-table-column>
-      <el-table-column
-        prop="perms" header-align="center" align="center" width="150" 
-        :show-overflow-tooltip="true" label="授权标识">
-      </el-table-column>
-      <el-table-column
-        prop="orderNum" header-align="center" align="center" label="排序">
-      </el-table-column>
-      <el-table-column
-        fixed="right" header-align="center" align="center" width="180" :label="$t('action.operation')">
+      <el-table-column prop="parentMenuName" header-align="center" align="center" width="120" label="上级菜单"></el-table-column>
+      <el-table-column prop="menuUrl" header-align="center" align="center" width="150" :show-overflow-tooltip="true" label="菜单URL"></el-table-column>
+      <el-table-column prop="permission" header-align="center" align="center" width="150" :show-overflow-tooltip="true" label="授权标识"></el-table-column>
+      <el-table-column prop="orderNum" header-align="center" align="center" label="排序"></el-table-column>
+      <el-table-column fixed="right" header-align="center" align="center" width="220" :label="$t('action.operation')">
         <template slot-scope="scope">
           <kt-button :label="$t('action.edit')" perms="sys:menu:edit" @click="handleEdit(scope.row)"/>
-          <kt-button :label="$t('action.delete')" perms="sys:menu:delete" type="danger" @click="handleDelete(scope.row)"/>
+          <kt-button :label="$t('action.delete')" perms="sys:menu:del" type="danger" @click="handleDelete(scope.row)"/>
+          <kt-button :label="$t('action.view')" perms="sys:menu:view" @click="handleView(scope.row)"/>
         </template>
       </el-table-column>
     </el-table>
     <!-- 新增修改界面 -->
-    <el-dialog :title="!dataForm.id ? '新增' : '修改'" width="40%" :visible.sync="dialogVisible" :close-on-click-modal="false">
+    <el-dialog :title="dialogTitle" width="40%" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="submitForm()" 
         label-width="80px" :size="size" style="text-align:left;">
-        <el-form-item label="菜单类型" prop="type">
-          <el-radio-group v-model="dataForm.type">
-            <el-radio v-for="(type, index) in menuTypeList" :label="index" :key="index">{{ type }}</el-radio>
+        <el-form-item label="菜单类型" prop="menuType">
+          <el-radio-group v-model="dataForm.menuType" :disabled="viewFlag">
+            <el-radio label="0">目录</el-radio>
+            <el-radio label="1">菜单</el-radio>
+            <el-radio label="2">按钮</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="menuTypeList[dataForm.type] + '名称'" prop="name">
-          <el-input v-model="dataForm.name" :placeholder="menuTypeList[dataForm.type] + '名称'"></el-input>
+        <el-form-item :label="menuTypeList[dataForm.menuType] + '名称'" prop="menuName">
+          <el-input v-model="dataForm.menuName" :placeholder="menuTypeList[dataForm.menuType] + '名称'" :readonly="viewFlag"></el-input>
         </el-form-item>
-        <el-form-item label="上级菜单" prop="parentName">
-            <popup-tree-input 
-              :data="popupTreeData" :props="popupTreeProps" :prop="dataForm.parentName==null||dataForm.parentName==''?'顶级菜单':dataForm.parentName" 
-              :nodeKey="''+dataForm.parentId" :currentChangeHandle="handleTreeSelectChange">
+        <el-form-item label="上级菜单" prop="parentMenuName">
+            <popup-tree-input :data="popupTreeData" :props="popupTreeProps" :prop="dataForm.parentMenuName==null||dataForm.parentMenuName==''?'顶级菜单':dataForm.parentMenuName" 
+              :nodeKey="''+dataForm.parentCoreMenuId" :currentChangeHandle="handleTreeSelectChange" :disabled="viewFlag">
             </popup-tree-input>
         </el-form-item>
-        <el-form-item v-if="dataForm.type !== 0" label="授权标识" prop="perms">
-          <el-input v-model="dataForm.perms" placeholder="如: sys:user:add, sys:user:edit, sys:user:delete"></el-input>
+        <el-form-item v-if="dataForm.menuType != '0'" label="授权标识" prop="permission">
+          <el-input v-model="dataForm.permission" placeholder="如: sys:user:add, sys:user:edit, sys:user:delete" :readonly="viewFlag"></el-input>
         </el-form-item>
-        <el-form-item v-if="dataForm.type === 1" label="菜单路由" prop="url">
+        <el-form-item v-if="dataForm.menuType == '1'" label="菜单路由" prop="menuUrl">
           <el-row>
             <el-col :span="22">
-                <el-input v-model="dataForm.url" placeholder="菜单路由"></el-input>
+                <el-input v-model="dataForm.menuUrl" placeholder="菜单路由" :readonly="viewFlag"></el-input>
             </el-col>
             <el-col :span="2" class="icon-list__tips">
                 <el-tooltip placement="top" effect="light" style="padding: 10px;">
@@ -95,28 +82,13 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item v-if="dataForm.type !== 2" label="排序编号" prop="orderNum">
-          <el-input-number v-model="dataForm.orderNum" controls-position="right" :min="0" label="排序编号"></el-input-number>
+        <el-form-item v-if="dataForm.menuType !='2'" label="排序编号" prop="orderNum">
+          <el-input-number v-model="dataForm.orderNum" controls-position="right" :min="0" label="排序编号" :disabled="viewFlag"></el-input-number>
         </el-form-item>
-        <el-form-item v-if="dataForm.type !== 2" label="菜单图标" prop="icon">
+        <el-form-item v-if="dataForm.menuType != '2'" label="菜单图标" prop="icon">
           <el-row>
             <el-col :span="22">
-              <!-- <el-popover
-                ref="iconListPopover"
-                placement="bottom-start"
-                trigger="click"
-                popper-class="mod-menu__icon-popover">
-                <div class="mod-menu__icon-list">
-                  <el-button
-                    v-for="(item, index) in dataForm.iconList"
-                    :key="index"
-                    @click="iconActiveHandle(item)"
-                    :class="{ 'is-active': item === dataForm.icon }">
-                    <icon-svg :name="item"></icon-svg>
-                  </el-button>
-                </div>
-              </el-popover> -->
-              <el-input v-model="dataForm.icon" v-popover:iconListPopover :readonly="false" placeholder="菜单图标名称（如：fa fa-home fa-lg）" class="icon-list__input"></el-input>
+              <el-input v-model="dataForm.icon" v-popover:iconListPopover :readonly="viewFlag" placeholder="菜单图标名称（如：fa fa-home fa-lg）" class="icon-list__input"></el-input>
             </el-col>
             <el-col :span="2" class="icon-list__tips">
               <fa-icon-tooltip />
@@ -126,7 +98,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button :size="size"  @click="dialogVisible = false">{{$t('action.cancel')}}</el-button>
-        <el-button :size="size"  type="primary" @click="submitForm()">{{$t('action.comfirm')}}</el-button>
+        <el-button :size="size"  type="primary" @click="submitForm()" v-show="!viewFlag">{{$t('action.comfirm')}}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -149,29 +121,32 @@ export default {
       size: "small",
       loading: false,
       filters: {
-        name: ""
+        menuName: ""
       },
       tableTreeDdata: [],
       dialogVisible: false,
+      editLoading: false,
       menuTypeList: ["目录", "菜单", "按钮"],
+      dialogTitle: "",
+      viewFlag: false,
       dataForm: {
-        id: 0,
-        type: 1,
-        name: "",
-        parentId: 0,
-        parentName: "",
-        url: "",
-        perms: "",
+        coreMenuId: 0,
+        menuType: "0",
+        menuName: "",
+        parentCoreMenuId: 0,
+        parentMenuName: "",
+        menuUrl: "",
+        permission: "",
         orderNum: 0,
-        icon: "",
-        iconList: []
+        icon: ""
       },
       dataRule: {
-        name: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }]
+        menuType: [{ required: true, message: "菜单类型不能为空", trigger: "blur" }],
+        menuName: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }]
       },
       popupTreeData: [],
       popupTreeProps: {
-        label: "name",
+        label: "menuName",
         children: "children"
       }
     };
@@ -180,7 +155,7 @@ export default {
     // 获取数据
     findTreeData: function() {
       this.loading = true;
-      this.$api.menu.findMenuTree().then(res => {
+      this.$api.menu.findCoreMenuTree({menuName:this.filters.menuName}).then(res => {
         this.tableTreeDdata = res.data;
         this.popupTreeData = this.getParentMenuTree(res.data);
         this.loading = false;
@@ -189,8 +164,8 @@ export default {
     // 获取上级菜单树
     getParentMenuTree: function(tableTreeDdata) {
       let parent = {
-        parentId: 0,
-        name: "顶级菜单",
+        coreMenuId: 0,
+        menuName: "顶级菜单",
         children: tableTreeDdata
       };
       return [parent];
@@ -198,51 +173,55 @@ export default {
     // 显示新增界面
     handleAdd: function() {
       this.dialogVisible = true;
-      this.dataForm = {
-        id: 0,
-        type: 1,
-        typeList: ["目录", "菜单", "按钮"],
-        name: "",
-        parentId: 0,
-        parentName: "",
-        url: "",
-        perms: "",
+      this.dialogTitle = "新增";
+      this.viewFlag = false;
+      this.dataForm={
+        coreMenuId: 0,
+        menuType: "0",
+        menuName: "",
+        parentCoreMenuId: 0,
+        parentMenuName: "",
+        menuUrl: "",
+        permission: "",
         orderNum: 0,
-        icon: "",
-        iconList: []
+        icon: ""
       };
     },
     // 显示编辑界面
     handleEdit: function(row) {
       this.dialogVisible = true;
-      Object.assign(this.dataForm, row);
+      this.dialogTitle = "编辑";
+      this.viewFlag = false;
+      let _this = this;
+      this.$api.menu.find({coreMenuId:row.coreMenuId}).then(res => {
+        Object.assign(_this.dataForm, res.data);
+      });
     },
     // 删除
     handleDelete(row) {
       this.$confirm("确认删除选中记录吗？", "提示", {
         type: "warning"
       }).then(() => {
-        let params = this.getDeleteIds([], row);
-        this.$api.menu.batchDelete(params).then(res => {
+        this.$api.menu.del({coreMenuId:row.coreMenuId}).then(res => {
           this.findTreeData();
           this.$message({ message: "删除成功", type: "success" });
         });
       });
     },
-    // 获取删除的包含子菜单的id列表
-    getDeleteIds(ids, row) {
-      ids.push({ id: row.id });
-      if (row.children != null) {
-        for (let i = 0, len = row.children.length; i < len; i++) {
-          this.getDeleteIds(ids, row.children[i]);
-        }
-      }
-      return ids;
-    },
+     // 显示查看界面
+    handleView: function(row) {
+      this.dialogVisible = true;
+      this.dialogTitle = "查看";
+      this.viewFlag = true;
+      let _this = this;
+      this.$api.menu.find({coreMenuId:row.coreMenuId}).then(res => {
+        Object.assign(_this.dataForm, res.data);
+      });
+    },   
     // 菜单树选中
     handleTreeSelectChange(data, node) {
-      this.dataForm.parentId = data.id;
-      this.dataForm.parentName = data.name;
+      this.dataForm.parentCoreMenuId = data.coreMenuId;
+      this.dataForm.parentMenuName = data.menuName;
     },
     // 图标选中
     iconActiveHandle(iconName) {
@@ -255,7 +234,7 @@ export default {
           this.$confirm("确认提交吗？", "提示", {}).then(() => {
             this.editLoading = true;
             let params = Object.assign({}, this.dataForm);
-            this.$api.menu.save(params).then(res => {
+            this.$api.menu.saveOrEdit(params).then(res => {
               this.editLoading = false;
               if (res.code == 200) {
                 this.$message({ message: "操作成功", type: "success" });

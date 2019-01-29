@@ -9,9 +9,6 @@
       <el-menu :default-active="activeIndex" class="el-menu-demo" 
           :background-color="themeColor" text-color="#fff" active-text-color="#ffd04b" mode="horizontal" @select="selectNavBar()">
         <el-menu-item index="1" @click="$router.push('/')"><i class="fa fa-home fa-lg"></i>  </el-menu-item>
-        <el-menu-item index="2" @click="openWindow('https://gitee.com/liuge1988/kitty')">{{$t("common.projectRepo")}}</el-menu-item>
-        <el-menu-item index="3" @click="openWindow('https://gitee.com/liuge1988/kitty/wikis/Home')">{{$t("common.doc")}}</el-menu-item>
-        <el-menu-item index="4" @click="openWindow('https://www.cnblogs.com/xifengxiaoma/')">{{$t("common.blog")}}</el-menu-item>
       </el-menu>
     </span>
     <span class="tool-bar">
@@ -30,8 +27,6 @@
         </el-dropdown-menu>
       </el-dropdown>
     </span>
-    <!--备份还原界面-->
-    <backup ref="backup" v-if="backupVisible" @afterRestore="afterRestore">  </backup>
   </div>
 </template>
 
@@ -41,13 +36,11 @@ import mock from "@/mock/index"
 import Hamburger from "@/components/Hamburger"
 import ThemePicker from "@/components/ThemePicker"
 import LangSelector from "@/components/LangSelector"
-import Backup from "@/views/Backup/Backup"
 export default {
   components:{
         Hamburger,
         ThemePicker,
-        LangSelector,
-        Backup
+        LangSelector
   },
   data() {
     return {
@@ -84,14 +77,6 @@ export default {
           this.$refs.backup.init()
       })
     },
-    // 成功还原之后，重新登录
-    afterRestore: function() {
-        sessionStorage.removeItem("user")
-        this.$router.push("/login")
-        this.$api.login.logout().then((res) => {
-          }).catch(function(res) {
-        })
-    },
     // 退出登录
     logout: function() {
       this.$confirm("确认退出吗?", "提示", {
@@ -108,7 +93,7 @@ export default {
     }
   },
   mounted() {
-    this.sysName = "Kitty Platform"
+    this.sysName = "CMS Platform"
     var user = sessionStorage.getItem("user")
     if (user) {
       this.userName = user

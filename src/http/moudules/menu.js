@@ -5,33 +5,43 @@ import axios from '../axios'
  */
 
  // 保存
-export const save = (data) => {
+export const saveOrEdit = (data) => {
     return axios({
-        url: '/menu/save',
+        url: '/sys/coreMenu/saveOrEdit',
         method: 'post',
         data
     })
 }
 // 删除
-export const batchDelete = (data) => {
+export const del = (params) => {
     return axios({
-        url: '/menu/delete',
-        method: 'post',
-        data
+        url: '/sys/coreMenu/delete',
+        method: 'delete',
+        params
     })
 }
 // 查找导航菜单树
 export const findNavTree = (params) => {
     return axios({
-        url: '/menu/findNavTree',
+        url: '/sys/coreMenu/findNavTree',
         method: 'get',
         params
     })
 }
 // 查找导航菜单树
-export const findMenuTree = () => {
+export const findCoreMenuTree = (params) => {
     return axios({
-        url: '/menu/findMenuTree',
-        method: 'get'
+        url: '/sys/coreMenu/findCoreMenuTree',
+        method: 'get',
+        params
+    })
+}
+
+// 查找导航菜单树
+export const find = (params) => {
+    return axios({
+        url: '/sys/coreMenu/find',
+        method: 'get',
+        params
     })
 }

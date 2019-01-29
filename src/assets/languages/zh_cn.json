@@ -19,6 +19,7 @@
         "add": "新增",
         "edit": "编辑",
         "delete": "删除",
+        "view": "查看",
         "batchDelete": "批量删除",
         "search": "查询",
         "loading": "拼命加载中",
