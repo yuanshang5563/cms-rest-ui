@@ -4,8 +4,11 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
-				<el-input v-model="filters.deptName" placeholder="机构名称"></el-input>
+				<el-input v-model="filters.dictGroupName" placeholder="字典组名称"></el-input>
 			</el-form-item>
+ 			<el-form-item>
+				<el-input v-model="filters.dictGroupCode" placeholder="字典组代码"></el-input>
+			</el-form-item>     
 			<el-form-item>
 				<kt-button :label="$t('action.search')" perms="sys:dept:view" type="primary" @click="findTreeData()"/>
 			</el-form-item>
@@ -16,10 +19,10 @@
 	</div>
 	<!--表格树内容栏-->
     <el-table :data="tableTreeDdata" stripe size="mini" style="width: 100%;" v-loading="loading" :element-loading-text="$t('action.loading')">
-      <el-table-column prop="coreDeptId" header-align="center" align="center" width="80" label="ID"></el-table-column>
-      <table-tree-column prop="deptName" header-align="center" treeKey="coreDeptId" parentKey="parentCoreDeptId" width="150" label="机构名称"></table-tree-column>
-      <el-table-column prop="deptCode" header-align="center" align="center" label="机构代码"></el-table-column>
-      <el-table-column prop="parentDeptName" header-align="center" align="center" width="120" label="上级机构"></el-table-column>
+      <el-table-column prop="coreDictGroupId" header-align="center" align="center" width="80" label="ID"></el-table-column>
+      <table-tree-column prop="dictGroupName" header-align="center" treeKey="coreDictGroupId" parentKey="parentCoreDictGroupId" width="150" label="字典组名称"></table-tree-column>
+      <el-table-column prop="dictGroupCode" header-align="center" align="center" label="字典组代码"></el-table-column>
+      <el-table-column prop="parentDictGroupNameName" header-align="center" align="center" width="120" label="上级字典组"></el-table-column>
       <el-table-column prop="orderNum" header-align="center" align="center" label="排序"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="220" :label="$t('action.operation')">
         <template slot-scope="scope">
@@ -32,23 +35,20 @@
     <!-- 新增修改界面 -->
     <el-dialog :title="dialogTitle" width="40%" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="submitForm()" 
-        label-width="80px" :size="size" style="text-align:left;">
-        <el-form-item label="机构名称" prop="deptName">
-          <el-input v-model="dataForm.deptName" :readonly="viewFlag"></el-input>
+        label-width="100px" :size="size" style="text-align:left;">
+        <el-form-item label="字典组名称" prop="dictGroupName">
+          <el-input v-model="dataForm.dictGroupName" :readonly="viewFlag"></el-input>
         </el-form-item>
-        <el-form-item label="机构代码" prop="deptCode">
-          <el-input v-model="dataForm.deptCode" :readonly="viewFlag"></el-input>
+        <el-form-item label="字典组代码" prop="dictGroupCode">
+          <el-input v-model="dataForm.dictGroupCode" :readonly="viewFlag"></el-input>
         </el-form-item>        
-        <el-form-item label="上级机构" prop="parentDeptName">
-            <popup-tree-input :data="popupTreeData" :props="popupTreeProps" :prop="dataForm.parentDeptName==null?'顶级节点':dataForm.parentDeptName" 
-              :nodeKey="''+dataForm.parentCoreDeptId" :currentChangeHandle="handleTreeSelectChange" :disabled="viewFlag">
+        <el-form-item label="上级字典组" prop="parentDictGroupNameName">
+            <popup-tree-input :data="popupTreeData" :props="popupTreeProps" :prop="dataForm.parentDictGroupNameName==null?'顶级节点':dataForm.parentDictGroupNameName" 
+              :nodeKey="''+dataForm.parentCoreDictGroupId" :currentChangeHandle="handleTreeSelectChange" :disabled="viewFlag">
             </popup-tree-input>
         </el-form-item>
-        <el-form-item label="排序编号" prop="orderNum">
-          <el-input-number v-model="dataForm.orderNum" controls-position="right" :min="0" label="排序编号" :disabled="viewFlag"></el-input-number>
-        </el-form-item>
-        <el-form-item label="机构描述" prop="deptDesc">
-          <el-input v-model="dataForm.deptDesc" type="textarea" :readonly="viewFlag"></el-input>
+        <el-form-item label="字典组描述" prop="dictGroupDesc">
+          <el-input v-model="dataForm.dictGroupDesc" type="textarea" :readonly="viewFlag"></el-input>
         </el-form-item>               
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -64,7 +64,6 @@ import KtButton from "@/views/Core/KtButton"
 import TableTreeColumn from '@/views/Core/TableTreeColumn'
 import PopupTreeInput from "@/components/PopupTreeInput"
 import FaIconTooltip from "@/components/FaIconTooltip"
-import { format } from "@/utils/datetime"
 export default {
 	components:{
     PopupTreeInput,
@@ -77,35 +76,35 @@ export default {
 			size: 'small',
 			loading: false,
 			filters: {
-				deptName: ''
+        dictGroupName: '',
+        dictGroupCode: ''
       },
       tableTreeDdata: [],
       dialogVisible: false,
       dialogTitle: '',
       viewFlag: false,
       dataForm: {
-        coreDeptId: 0,
-        deptName: '',
-        parentCoreDeptId: null,
-        deptCode: '',
-        deptDesc:'',
-        orderNum:0,
-        parentDeptName: ''
+        coreDictGroupId: 0,
+        dictGroupName: '',
+        dictGroupCode: '',
+        dictGroupDesc: '',
+        parentCoreDictGroupId:null,
+        parentDictGroupNameName: ''
       },
       dataRule: {
-        deptName: [
-          { required: true, message: '机构名称不能为空', trigger: 'blur' }
+        dictGroupName: [
+          { required: true, message: '字典组名称不能为空', trigger: 'blur' }
         ],
-        deptCode: [
-          { required: true, message: '机构代码不能为空', trigger: 'blur' }
+        dictGroupCode: [
+          { required: true, message: '字典组代码不能为空', trigger: 'blur' }
         ],        
-        parentDeptName: [
-          { required: true, message: '上级机构不能为空', trigger: 'change' }
+        parentDictGroupNameName: [
+          { required: true, message: '上级字典组不能为空', trigger: 'change' }
         ]
       },
       popupTreeData: [],
       popupTreeProps: {
-				label: 'deptName',
+				label: 'dictGroupName',
 				children: 'children'
 			}
 		}
@@ -114,9 +113,9 @@ export default {
 		// 获取数据
     findTreeData: function () {
       this.loading = true
-			this.$api.dept.findDeptTree({deptName:this.filters.deptName}).then((res) => {
-        this.tableTreeDdata = res.data
-        this.popupTreeData = res.data
+			this.$api.dictGroup.findDictGroupTree({dictGroupName:this.filters.dictGroupName,dictGroupCode:this.filters.dictGroupCode}).then((res) => {
+        this.tableTreeDdata = res.data;
+        this.popupTreeData = res.data;
         this.loading = false
 			})
     },
@@ -126,13 +125,12 @@ export default {
       this.dialogTitle = "新增";
       this.viewFlag = false;      
 			this.dataForm = {
-        coreDeptId: 0,
-        deptName: '',
-        parentCoreDeptId: null,
-        deptCode: '',
-        deptDesc:'',
-        orderNum:0,
-        parentDeptName: ''
+        coreDictGroupId: 0,
+        dictGroupName: '',
+        dictGroupCode: '',
+        dictGroupDesc: '',
+        parentCoreDictGroupId:null,
+        parentDictGroupNameName: ''
       }
 		},
 		// 显示编辑界面
@@ -141,7 +139,7 @@ export default {
       this.dialogTitle = "编辑";
       this.viewFlag = false;
       let _this = this;
-      this.$api.dept.find({coreDeptId:row.coreDeptId}).then(res => {
+      this.$api.dictGroup.find({coreDictGroupId:row.coreDictGroupId}).then(res => {
         Object.assign(_this.dataForm, res.data);
       });     
 		},
@@ -150,7 +148,7 @@ export default {
       this.$confirm('确认删除选中记录吗？', '提示', {
 				type: 'warning'
       }).then(() => {
-        this.$api.dept.del({coreDeptId:row.coreDeptId}).then( res => {
+        this.$api.dictGroup.del({coreDictGroupId:row.coreDictGroupId}).then( res => {
           this.findTreeData()
           this.$message({message: '删除成功', type: 'success'})
         })
@@ -162,14 +160,14 @@ export default {
       this.dialogTitle = "查看";
       this.viewFlag = true;
       let _this = this;
-      this.$api.dept.find({coreDeptId:row.coreDeptId}).then(res => {
+      this.$api.dictGroup.find({coreDictGroupId:row.coreDictGroupId}).then(res => {
         Object.assign(_this.dataForm, res.data);
       });     
 		},   
-      // 机构树选中
+      // 字典组树选中
     handleTreeSelectChange (data, node) {
-      this.dataForm.parentCoreDeptId = data.coreDeptId
-      this.dataForm.parentDeptName = data.deptName
+      this.dataForm.parentCoreDictGroupId = data.coreDictGroupId
+      this.dataForm.parentDictGroupNameName = data.dictGroupName
     },
     // 表单提交
     submitForm () {
@@ -178,7 +176,7 @@ export default {
 					this.$confirm('确认提交吗？', '提示', {}).then(() => {
 						this.editLoading = true
 						let params = Object.assign({}, this.dataForm)
-						this.$api.dept.saveOrEdit(params).then((res) => {
+						this.$api.dictGroup.saveOrEdit(params).then((res) => {
               this.editLoading = false
               if(res.code == 200) {
 								this.$message({ message: '操作成功', type: 'success' })
@@ -192,10 +190,6 @@ export default {
 					})
 				}
       })
-    },
-		// 时间格式化
-    dateFormat: function (row, column, cellValue, index){
-      return format(row[column.property])
     }
     
 	},

@@ -20,6 +20,14 @@ export const del = (params) => {
         params
     })
 }
+// 重置密码
+export const resetPass = (params) => {
+    return axios({
+        url: '/sys/coreUser/resetPass',
+        method: 'get',
+        params
+    })
+}
 // 分页查询
 export const findPage = (data) => {
     return axios({

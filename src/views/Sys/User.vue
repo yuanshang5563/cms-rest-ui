@@ -15,7 +15,18 @@
 					<el-option label="男" value="sex.1"></el-option>
 					<el-option label="女" value="sex.2"></el-option>
 				</el-select>
-			</el-form-item>				
+			</el-form-item>		
+			<el-form-item>
+				<popup-tree-input 
+					:data="deptData" 
+					:props="deptTreeProps" 
+					:prop="filters.deptName" 
+					:nodeKey="''+filters.coreDeptId" 
+					:currentChangeHandle="filtersDeptTreeCurrentChangeHandle" 
+					:placeholder="filtersPlaceholder"
+					:disabled="viewFlag">
+				</popup-tree-input>				
+			</el-form-item>		
 			<el-form-item>
 				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage()"/>
 			</el-form-item>
@@ -37,13 +48,16 @@
 	<el-table-column prop="mobile" label="手机" sortable="true"></el-table-column>
 	<el-table-column prop="email" label="邮箱" sortable="true" width="220"></el-table-column>
 	<el-table-column prop="status" label="是否禁用" sortable="true"></el-table-column>
+	<!--
 	<el-table-column prop="createdTime" label="创建时间" sortable="true" :formatter="dateFormat"></el-table-column>
 	<el-table-column prop="modifiedTime" label="修改时间" sortable="true" :formatter="dateFormat"></el-table-column>
-	<el-table-column :label="$t('action.operation')" width="240" fixed="right" header-align="center" align="center">
+	-->
+	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
 		<kt-button :label="$t('action.edit')" perms="sys:role:add" :size="size" @click="handleEdit(scope.row)" />
 		<kt-button :label="$t('action.delete')" perms="sys:role:del" :size="size" type="danger" @click="handleDelete(scope.row)" />
 		<kt-button :label="$t('action.view')" perms="sys:role:view" :size="size" @click="handleView(scope.row)" />
+		<kt-button :label="$t('action.resetPass')" perms="sys:role:resetPass" :size="size" type="info" @click="handleResetPass(scope.row)" />
 		</template>
 	</el-table-column>
 	</el-table>
@@ -96,7 +110,10 @@
 					<el-option label="激活" value="0"></el-option>
 					<el-option label="禁用" value="1"></el-option>
 				</el-select>
-			</el-form-item>				
+			</el-form-item>	
+			<el-form-item label="用户描述" prop="comment">
+				<el-input v-model="dataForm.comment" type="textarea" :readonly="viewFlag"></el-input>
+			</el-form-item>						
 			<el-form-item label="角色" prop="userRoles">
 				<el-select v-model="dataForm.userRoles" multiple placeholder="请选择" style="width: 100%;" :disabled="viewFlag">
 					<el-option v-for="item in roles" :key="item.coreRoleId" :label="item.roleName" :value="item.coreRoleId"></el-option>
@@ -113,6 +130,21 @@
 			<el-button :size="size" @click.native="dialogVisible = false">{{$t('action.cancel')}}</el-button>
 			<el-button :size="size" type="primary" @click.native="submitForm" :loading="editLoading" v-show="!viewFlag">{{$t('action.submit')}}</el-button>
 		</div>
+	</el-dialog>
+	<!--新增编辑界面-->
+	<el-dialog title="重置密码" width="40%" :visible.sync="resetDialogVisible" :close-on-click-modal="false">
+		<el-form :model="resetDataForm" label-width="80px" :rules="resetDataFormRules" ref="resetDataForm" :size="size" label-position="right">
+			<el-form-item label="密码" prop="password">
+				<el-input v-model="resetDataForm.password" type="password" auto-complete="off"></el-input>
+			</el-form-item>
+			<el-form-item label="确认密码" prop="confirmPassword">
+				<el-input v-model="resetDataForm.confirmPassword" type="password" auto-complete="off"></el-input>
+			</el-form-item>						
+		</el-form>
+		<div slot="footer" class="dialog-footer">
+			<el-button :size="size" @click.native="resetDialogVisible = false">{{$t('action.cancel')}}</el-button>
+			<el-button :size="size" type="primary" @click.native="submitRestPassForm">{{$t('action.submit')}}</el-button>
+		</div>		
 	</el-dialog>
   </div>
 </template>
@@ -145,14 +177,26 @@ export default {
 			} else {
 				callback();
 			}
+		};		
+		var validateConfirmPass = (rule, value, callback) => {
+			if (value === '') {
+				callback(new Error('请输入确认密码'));
+			} else if (value !== this.resetDataForm.password) {
+				callback(new Error('两次输入密码不一致!'));
+			} else {
+				callback();
+			}
 		};				
 		return {
 			size: 'small',
 			filters: {
 				userName: '',
 				sex: '',
-				realName: ''
+				realName: '',
+				coreDeptId: null,
+				deptName: ''
 			},
+			filtersPlaceholder:"机构",
 			pageRequest: { pageNum: 1, pageSize: 10 },
 			total: 0,
 			pageResult: [],
@@ -210,20 +254,35 @@ export default {
 				label: 'deptName',
 				children: 'children'
 			},
-			roles: []
+			roles: [],
+			resetDialogVisible: false,
+			resetDataForm: {
+				coreUserId: 0,
+				password: '',
+				confirmPassword: ''
+			},
+			resetDataFormRules:{
+				password: [
+					{ required: true, message: '请输入新密码', trigger: 'blur' }
+				],	
+				confirmPassword: [
+					{ validator: validateConfirmPass, trigger: 'blur' }
+				]								
+			}
 		}
 	},
 	methods: {
 		// 获取分页数据
 		findPage: function (data) {
 			this.loading = true;
-			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,userName:this.filters.userName,realName:this.filters.realName,sex:this.filters.sex};
+			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,userName:this.filters.userName,
+			realName:this.filters.realName,sex:this.filters.sex,coreDeptId:this.filters.coreDeptId};
 			this.$api.user.findPage(param).then((res) => {
 				this.loading = false;
 				this.pageResult = res.data.list;
 				this.total= res.data.total
 				this.findUserRoles()
-			}).then(data!=null?data.callback:'')
+			})
 		},
 		// 选择切换
 		selectionChange: function (selections) {
@@ -304,7 +363,13 @@ export default {
 				}
 				this.dataForm.userRoles = userRoles;
 			});	
-		},		
+		},
+		handleResetPass: function (row) {
+			this.resetDialogVisible = true;
+			this.resetDataForm.coreUserId=row.coreUserId;
+			this.resetDataForm.password='';
+			this.resetDataForm.confirmPassword='';
+		},	
 		// 编辑
 		submitForm: function () {
 			this.$refs.dataForm.validate((valid) => {
@@ -325,8 +390,8 @@ export default {
 						this.$api.user.saveOrEdit(params).then((res) => {
 							if(res.code == 200) {
 								this.$message({ message: '操作成功', type: 'success' })
-								this.dialogVisible = false
-								this.$refs['dataForm'].resetFields()
+								this.dialogVisible = false;
+								this.$refs['dataForm'].resetFields();
 							} else {
 								this.$message({message: '操作失败, ' + res.msg, type: 'error'})
 							}
@@ -337,16 +402,39 @@ export default {
 				}
 			})
 		},
+		submitRestPassForm: function (){
+			this.$refs.resetDataForm.validate((valid) => {
+				if (valid) {
+					this.$confirm('确认提交吗？', '提示', {}).then(() => {
+						let params = Object.assign({}, this.resetDataForm);
+						this.$api.user.resetPass(params).then((res) => {
+							if(res.code == 200) {
+								this.$message({ message: '操作成功', type: 'success' })
+								this.resetDialogVisible = false;
+								this.$refs['resetDataForm'].resetFields();
+							} else {
+								this.$message({message: '操作失败, ' + res.msg, type: 'error'})
+							}						
+						})
+					})
+				}
+			})
+		},		
 		// 获取部门列表
 		findDeptTree: function () {
-			this.$api.dept.findDeptTree().then((res) => {
+			this.$api.dept.findDeptTree({}).then((res) => {
 				this.deptData = res.data
 			})
 		},
-		// 菜单树选中
+		// 部门树选中
       	deptTreeCurrentChangeHandle (data, node) {
         	this.dataForm.coreDeptId = data.coreDeptId
         	this.dataForm.deptName = data.deptName
+		},
+		// 搜索部门树选中
+      	filtersDeptTreeCurrentChangeHandle (data, node) {
+        	this.filters.coreDeptId = data.coreDeptId
+        	this.filters.deptName = data.deptName
 		},
 		// 时间格式化
       	dateFormat: function (row, column, cellValue, index){

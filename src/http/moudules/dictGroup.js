@@ -1,13 +1,13 @@
 import axios from '../axios'
 
 /* 
- * 机构管理模块
+ * 字典组管理模块
  */
 
 // 保存
 export const saveOrEdit = (data) => {
     return axios({
-        url: '/sys/coreDept/saveOrEdit',
+        url: '/sys/CoreDictionariesGroup/saveOrEdit',
         method: 'post',
         data
     })
@@ -15,23 +15,23 @@ export const saveOrEdit = (data) => {
 // 删除
 export const del = (params) => {
     return axios({
-        url: '/sys/coreDept/delete',
+        url: '/sys/CoreDictionariesGroup/delete',
         method: 'delete',
         params
     })
 }
-// 查询机构
+// 查询字典组
 export const find = (params) => {
     return axios({
-        url: '/sys/coreDept/find',
+        url: '/sys/CoreDictionariesGroup/find',
         method: 'get',
         params
     })
 }
-// 查询机构树
-export const findDeptTree = (data) => {
+// 查询字典组树
+export const findDictGroupTree = (data) => {
     return axios({
-        url: '/sys/coreDept/findTree',
+        url: '/sys/CoreDictionariesGroup/findTree',
         method: 'post',
         data
     })

@@ -29,7 +29,9 @@ export default {
       });
     },
     onloaded: function() {
-      this.loading.close()
+      if(null != this.loading){
+        this.loading.close();
+      }
     }
   },
   mounted() {

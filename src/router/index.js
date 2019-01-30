@@ -72,7 +72,7 @@ function addDynamicMenuAndRoutes(userName, to, from) {
     console.log('动态菜单和路由已经存在.')
     return
   }
-  api.menu.findNavTree({'coreUserId':11})
+  api.menu.findNavTree({coreUserId:11})
   .then(res => {
     // 添加动态路由
     let dynamicRoutes = addDynamicRoutes(res.data)
@@ -134,7 +134,7 @@ function addDynamicRoutes (menuList = [], routes = []) {
         route['component'] = resolve => require([`@/views/IFrame/IFrame`], resolve)
         // 存储嵌套页面路由路径和访问URL
         let url = getIFrameUrl(menuList[i].menuUrl)
-        let iFrameUrl = {'path':path, 'url':menuUrl}
+        let iFrameUrl = {'path':path, 'url':url}
         store.commit('addIFrameUrl', iFrameUrl)
       } else {
        try {
@@ -147,7 +147,8 @@ function addDynamicRoutes (menuList = [], routes = []) {
          }
          url = url.substring(0, url.length - 1)
          route['component'] = resolve => require([`@/views/${url}`], resolve)
-       } catch (e) {}
+       } catch (e) {
+       }
      }
      routes.push(route)
    }

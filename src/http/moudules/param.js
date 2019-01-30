@@ -1,13 +1,13 @@
 import axios from '../axios'
 
 /* 
- * 字典管理模块
+ * 参数管理模块
  */
 
 // 保存
 export const saveOrEdit = (data) => {
     return axios({
-        url: '/sys/coreDictionaries/saveOrEdit',
+        url: '/sys/coreParameter/saveOrEdit',
         method: 'post',
         data
     })
@@ -15,7 +15,7 @@ export const saveOrEdit = (data) => {
 // 删除
 export const del = (params) => {
     return axios({
-        url: '/sys/coreDictionaries/delete',
+        url: '/sys/coreParameter/delete',
         method: 'delete',
         params
     })
@@ -23,16 +23,15 @@ export const del = (params) => {
 // 分页查询
 export const findPage = (data) => {
     return axios({
-        url: '/sys/coreDictionaries/findPage',
+        url: '/sys/coreParameter/findPage',
         method: 'post',
         data
     })
 }
-
 // 查找
 export const find = (params) => {
     return axios({
-        url: '/sys/coreDictionaries/find',
+        url: '/sys/coreParameter/find',
         method: 'get',
         params
     })

@@ -285,7 +285,7 @@ export default {
 			let coreRoleId = this.selectRole.coreRoleId
 			if('superadmin' == this.selectRole.role) {
 				this.$message({message: '超级管理员拥有所有菜单权限，不允许修改！', type: 'error'})
-				return
+				//return
 			}
 			this.authLoading = true
 			let checkedNodes = this.$refs.menuTree.getCheckedNodes(false, true)

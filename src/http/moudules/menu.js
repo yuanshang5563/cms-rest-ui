@@ -21,19 +21,19 @@ export const del = (params) => {
     })
 }
 // 查找导航菜单树
-export const findNavTree = (params) => {
+export const findNavTree = (data) => {
     return axios({
         url: '/sys/coreMenu/findNavTree',
-        method: 'get',
-        params
+        method: 'post',
+        data
     })
 }
 // 查找导航菜单树
-export const findCoreMenuTree = (params) => {
+export const findCoreMenuTree = (data) => {
     return axios({
         url: '/sys/coreMenu/findCoreMenuTree',
-        method: 'get',
-        params
+        method: 'post',
+        data
     })
 }
 

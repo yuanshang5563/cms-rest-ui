@@ -4,27 +4,22 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
-				<el-input v-model="filters.dictCode" placeholder="字典码"></el-input>
-			</el-form-item>
-			<el-form-item>
-				<el-input v-model="filters.dictValue" placeholder="字典值"></el-input>
+				<el-input v-model="filters.paramName" placeholder="参数名称"></el-input>
 			</el-form-item>	
 			<el-form-item>
-				<popup-tree-input 
-					:data="groupData" 
-					:props="groupTreeProps" 
-					:prop="filters.dictGroupName" 
-					:nodeKey="''+filters.coreDictGroupId" 
-					:currentChangeHandle="filterGroupTreeCurrentChangeHandle" 
-					:placeholder="filtersPlaceholder"
-					:disabled="viewFlag">
-				</popup-tree-input>
-			</el-form-item>								
+				<el-select v-model="filters.paramType" clearable placeholder="参数类型">
+					<el-option label="系统参数" value="sys"></el-option>
+					<el-option label="用户参数" value="usr"></el-option>
+				</el-select>
+			</el-form-item>				
+			<el-form-item>
+				<el-input v-model="filters.paramCode" placeholder="参数代码"></el-input>
+			</el-form-item>				
 			<el-form-item>
 				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage()"/>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.add')" perms="sys:dict:add" type="primary" @click="handleAdd" />
+				<kt-button :label="$t('action.add')" perms="sys:user:add" type="primary" @click="handleAdd" />
 			</el-form-item>
 		</el-form>
 	</div>
@@ -34,8 +29,12 @@
 		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
-	<el-table-column prop="dictCode" label="字典码" sortable="true"></el-table-column>
-	<el-table-column prop="dictValue" label="字典值" sortable="true"></el-table-column>
+	<el-table-column prop="paramName" label="参数名称" sortable="true"></el-table-column>
+	<el-table-column prop="paramType" label="参数类型" sortable="true"></el-table-column>
+	<el-table-column prop="paramCode" label="参数代码" sortable="true"></el-table-column>
+	<el-table-column prop="paramValue" label="参数值" sortable="true"></el-table-column>
+	<el-table-column prop="createdTime" label="创建时间" sortable="true" :formatter="dateFormat"></el-table-column>
+	<el-table-column prop="modifiedTime" label="修改时间" sortable="true" :formatter="dateFormat"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="220" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
 		<kt-button :label="$t('action.edit')" perms="sys:role:add" :size="size" @click="handleEdit(scope.row)" />
@@ -53,22 +52,31 @@
 	<!--新增编辑界面-->
 	<el-dialog :title="dialogTitle" width="40%" :visible.sync="dialogVisible" :close-on-click-modal="false">
 		<el-form :model="dataForm" label-width="80px" :rules="dataFormRules" ref="dataForm" :size="size" label-position="right">
-			<el-form-item label="字典码" prop="dictCode">
-				<el-input v-model="dataForm.dictCode" auto-complete="off" :readonly="viewFlag"></el-input>
+			<el-form-item label="参数名称" prop="paramName">
+				<el-input v-model="dataForm.paramName" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>
-			<el-form-item label="字典值" prop="dictValue">
-				<el-input v-model="dataForm.dictValue" auto-complete="off" :readonly="viewFlag"></el-input>
-			</el-form-item>							
-			<el-form-item label="字典组" prop="dictGroupName">
-				<popup-tree-input 
-					:data="groupData" 
-					:props="groupTreeProps" 
-					:prop="dataForm.dictGroupName" 
-					:nodeKey="''+dataForm.coreDictGroupId" 
-					:currentChangeHandle="groupTreeCurrentChangeHandle" 
-					:disabled="viewFlag">
-				</popup-tree-input>
-			</el-form-item>			
+			<el-form-item label="参数类型" prop="paramType">
+				<el-select v-model="dataForm.paramType" clearable placeholder="请选择" style="width:100%" :disabled="viewFlag">
+					<el-option label="系统参数" value="sys"></el-option>
+					<el-option label="用户参数" value="usr"></el-option>
+				</el-select>
+			</el-form-item>								
+			<el-form-item label="参数代码" prop="paramCode">
+				<el-input v-model="dataForm.paramCode" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>
+			<el-form-item label="参数值" prop="paramValue">
+				<el-input v-model="dataForm.paramValue" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>
+			<el-form-item label="参数描述" prop="paramDesc">
+				<el-input v-model="dataForm.paramDesc" type="textarea" :readonly="viewFlag"></el-input>
+			</el-form-item>						
+
+			<el-form-item label="创建时间" prop="createdTime" v-show="viewFlag">
+				<el-date-picker v-model="dataForm.createdTime" type="datetime" auto-complete="off" style="width:100%" :readonly="true"></el-date-picker>
+			</el-form-item>
+			<el-form-item label="修改时间" prop="modifiedTime" v-show="viewFlag">
+				<el-date-picker v-model="dataForm.modifiedTime" type="datetime" auto-complete="off" style="width:100%" :readonly="true"></el-date-picker>
+			</el-form-item>				
 		</el-form>
 		<div slot="footer" class="dialog-footer">
 			<el-button :size="size" @click.native="dialogVisible = false">{{$t('action.cancel')}}</el-button>
@@ -91,12 +99,10 @@ export default {
 		return {
 			size: 'small',
 			filters: {
-				dictCode: '',
-				dictValue: '',
-				coreDictGroupId: null,
-				dictGroupName: ''
+				paramName: '',
+				paramCode: '',
+				paramType: ''
 			},
-			filtersPlaceholder:"字典组",
 			pageRequest: { pageNum: 1, pageSize: 10 },
 			total: 0,
 			pageResult: [],
@@ -106,25 +112,26 @@ export default {
 			editLoading: false,
 			viewFlag: false,//查看标志
 			dataFormRules: {
-				dictCode: [
-					{ required: true, message: '请输入字典码', trigger: 'blur' }
+				paramName: [
+					{ required: true, message: '请输入参数名称', trigger: 'blur' }
 				],
-				dictValue: [
-					{ required: true, message: '请输入字典值', trigger: 'blur' }
+				paramType: [
+					{ required: true, message: '请选择参数类型', trigger: 'blur' }
+				],
+				paramCode: [
+					{ required: true, message: '请输入参数代码', trigger: 'blur' }
 				]
 			},
 			// 新增编辑界面数据
 			dataForm: {
-				coreDictId: 0,
-				dictCode: '',
-				dictValue: '',
-				coreDictGroupId: null,
-				dictGroupName: ''
-			},
-			groupData: [],
-			groupTreeProps: {
-				label: 'dictGroupName',
-				children: 'children'
+				coreParamId: 0,
+				paramName: '',
+				paramType: '',
+				paramCode: '',
+				paramValue: '',
+				paramDesc: '',
+				createdTime: null,
+				modifiedTime: null
 			}
 		}
 	},
@@ -132,8 +139,8 @@ export default {
 		// 获取分页数据
 		findPage: function (data) {
 			this.loading = true;
-			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,dictCode:this.filters.dictCode,dictValue:this.filters.dictValue,coreDictGroupId:this.filters.coreDictGroupId};
-			this.$api.dict.findPage(param).then((res) => {
+			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,paramName:this.filters.paramName,paramCode:this.filters.paramCode,paramType:this.filters.paramType};
+			this.$api.param.findPage(param).then((res) => {
 				this.loading = false;
 				this.pageResult = res.data.list;
 				this.total= res.data.total
@@ -149,7 +156,7 @@ export default {
 			this.$confirm("确认删除选中记录吗？", "提示", {
 				type: "warning"
 			}).then(() => {
-				this.$api.dict.del({coreDictId:row.coreDictId}).then(res => {
+				this.$api.param.del({coreParamId:row.coreParamId}).then(res => {
 				this.findPage();
 				this.$message({ message: "删除成功", type: "success" });
 				});
@@ -161,11 +168,14 @@ export default {
 			this.dialogTitle = "新增"
 			this.viewFlag = false;
 			this.dataForm = {
-				coreDictId: 0,
-				dictCode: '',
-				dictValue: '',
-				coreDictGroupId: null,
-				dictGroupName: ''
+				coreParamId: 0,
+				paramName: '',
+				paramType: '',
+				paramCode: '',
+				paramValue: '',
+				paramDesc: '',
+				createdTime: new Date(),
+				modifiedTime: new Date()
 			}
 		},
 		// 显示编辑界面
@@ -173,8 +183,9 @@ export default {
 			this.dialogVisible = true
 			this.dialogTitle = "编辑"
 			this.viewFlag = false;
-			this.$api.dict.find({coreDictId:row.coreDictId}).then(res => {
-				Object.assign(this.dataForm, res.data);			
+			let _this = this;
+			this.$api.param.find({coreParamId:row.coreParamId}).then(res => {
+				Object.assign(_this.dataForm, res.data);				
 			});	
 		},
 		// 显示查看界面
@@ -182,10 +193,11 @@ export default {
 			this.dialogVisible = true
 			this.dialogTitle = "查看"
 			this.viewFlag = true;
-			this.$api.dict.find({coreDictId:row.coreDictId}).then(res => {
-				Object.assign(this.dataForm, res.data);
+			let _this = this;
+			this.$api.param.find({coreParamId:row.coreParamId}).then(res => {
+				Object.assign(_this.dataForm, res.data);
 			});	
-		},
+		},	
 		// 编辑
 		submitForm: function () {
 			this.$refs.dataForm.validate((valid) => {
@@ -193,7 +205,7 @@ export default {
 					this.$confirm('确认提交吗？', '提示', {}).then(() => {
 						this.editLoading = true;
 						let params = Object.assign({}, this.dataForm);
-						this.$api.dict.saveOrEdit(params).then((res) => {
+						this.$api.param.saveOrEdit(params).then((res) => {
 							if(res.code == 200) {
 								this.$message({ message: '操作成功', type: 'success' })
 								this.dialogVisible = false;
@@ -207,27 +219,14 @@ export default {
 					})
 				}
 			})
-		},		
-		// 获取字典组列表
-		findGroupTree: function () {
-			this.$api.dictGroup.findDictGroupTree({}).then((res) => {
-				this.groupData = res.data
-			})
 		},
-		// 菜单树选中
-      	groupTreeCurrentChangeHandle (data, node) {
-        	this.dataForm.coreDictGroupId = data.coreDictGroupId
-        	this.dataForm.dictGroupName = data.dictGroupName
-		},
-		// 搜索菜单树选中
-      	filterGroupTreeCurrentChangeHandle (data, node) {
-        	this.filters.coreDictGroupId = data.coreDictGroupId
-        	this.filters.dictGroupName = data.dictGroupName
-		}
+		// 时间格式化
+      	dateFormat: function (row, column, cellValue, index){
+          	return format(row[column.property])
+      	},
 	},
 	mounted() {
 		this.findPage();
-		this.findGroupTree()
 	}
 }
 </script>
