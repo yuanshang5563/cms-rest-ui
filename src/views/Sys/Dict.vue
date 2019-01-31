@@ -21,10 +21,10 @@
 				</popup-tree-input>
 			</el-form-item>								
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage()"/>
+				<kt-button :label="$t('action.search')" perms="ROLE_CORE_DICT_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.add')" perms="sys:dict:add" type="primary" @click="handleAdd" />
+				<kt-button :label="$t('action.add')" perms="ROLE_CORE_DICT_ADD_EDIT" type="primary" @click="handleAdd" />
 			</el-form-item>
 		</el-form>
 	</div>
@@ -38,9 +38,9 @@
 	<el-table-column prop="dictValue" label="字典值" sortable="true"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="220" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
-		<kt-button :label="$t('action.edit')" perms="sys:role:add" :size="size" @click="handleEdit(scope.row)" />
-		<kt-button :label="$t('action.delete')" perms="sys:role:del" :size="size" type="danger" @click="handleDelete(scope.row)" />
-		<kt-button :label="$t('action.view')" perms="sys:role:view" :size="size" @click="handleView(scope.row)" />
+		<kt-button :label="$t('action.edit')" perms="ROLE_CORE_DICT_ADD_EDIT" :size="size" @click="handleEdit(scope.row)" />
+		<kt-button :label="$t('action.delete')" perms="ROLE_CORE_DICT_DEL" :size="size" type="danger" @click="handleDelete(scope.row)" />
+		<kt-button :label="$t('action.view')" perms="ROLE_CORE_DICT_EDIT_VIEW" :size="size" @click="handleView(scope.row)" />
 		</template>
 	</el-table-column>
 	</el-table>

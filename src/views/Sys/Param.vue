@@ -16,10 +16,10 @@
 				<el-input v-model="filters.paramCode" placeholder="参数代码"></el-input>
 			</el-form-item>				
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage()"/>
+				<kt-button :label="$t('action.search')" perms="ROLE_CORE_PARAM_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.add')" perms="sys:user:add" type="primary" @click="handleAdd" />
+				<kt-button :label="$t('action.add')" perms="ROLE_CORE_PARAM_ADD_EDIT" type="primary" @click="handleAdd" />
 			</el-form-item>
 		</el-form>
 	</div>
@@ -37,9 +37,9 @@
 	<el-table-column prop="modifiedTime" label="修改时间" sortable="true" :formatter="dateFormat"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="220" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
-		<kt-button :label="$t('action.edit')" perms="sys:role:add" :size="size" @click="handleEdit(scope.row)" />
-		<kt-button :label="$t('action.delete')" perms="sys:role:del" :size="size" type="danger" @click="handleDelete(scope.row)" />
-		<kt-button :label="$t('action.view')" perms="sys:role:view" :size="size" @click="handleView(scope.row)" />
+		<kt-button :label="$t('action.edit')" perms="ROLE_CORE_PARAM_ADD_EDIT" :size="size" @click="handleEdit(scope.row)" />
+		<kt-button :label="$t('action.delete')" perms="ROLE_CORE_PARAM_DEL" :size="size" type="danger" @click="handleDelete(scope.row)" />
+		<kt-button :label="$t('action.view')" perms="ROLE_CORE_PARAM_EDIT_VIEW" :size="size" @click="handleView(scope.row)" />
 		</template>
 	</el-table-column>
 	</el-table>

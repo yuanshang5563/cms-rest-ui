@@ -28,10 +28,10 @@
 				</popup-tree-input>				
 			</el-form-item>		
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage()"/>
+				<kt-button :label="$t('action.search')" perms="ROLE_CORE_USER_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.add')" perms="sys:user:add" type="primary" @click="handleAdd" />
+				<kt-button :label="$t('action.add')" perms="ROLE_CORE_USER_ADD_EDIT" type="primary" @click="handleAdd" />
 			</el-form-item>
 		</el-form>
 	</div>
@@ -54,10 +54,10 @@
 	-->
 	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
-		<kt-button :label="$t('action.edit')" perms="sys:role:add" :size="size" @click="handleEdit(scope.row)" />
-		<kt-button :label="$t('action.delete')" perms="sys:role:del" :size="size" type="danger" @click="handleDelete(scope.row)" />
-		<kt-button :label="$t('action.view')" perms="sys:role:view" :size="size" @click="handleView(scope.row)" />
-		<kt-button :label="$t('action.resetPass')" perms="sys:role:resetPass" :size="size" type="info" @click="handleResetPass(scope.row)" />
+		<kt-button :label="$t('action.edit')" perms="ROLE_CORE_USER_ADD_EDIT" :size="size" @click="handleEdit(scope.row)" />
+		<kt-button :label="$t('action.delete')" perms="ROLE_CORE_USER_DEL" :size="size" type="danger" @click="handleDelete(scope.row)" />
+		<kt-button :label="$t('action.view')" perms="ROLE_CORE_USER_EDIT_VIEW" :size="size" @click="handleView(scope.row)" />
+		<kt-button :label="$t('action.resetPass')" perms="ROLE_CORE_USER_RESET" :size="size" type="info" @click="handleResetPass(scope.row)" />
 		</template>
 	</el-table-column>
 	</el-table>

@@ -7,10 +7,10 @@
 				<el-input v-model="filters.deptName" placeholder="机构名称"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:dept:view" type="primary" @click="findTreeData()"/>
+        <el-button size="mini" type="primary" @click="findTreeData()">{{$t('action.search')}}</el-button>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.add')" perms="sys:dept:add" type="primary" @click="handleAdd"/>
+				<kt-button :label="$t('action.add')" perms="ROLE_CORE_DEPT_ADD_EDIT" type="primary" @click="handleAdd"/>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -23,9 +23,9 @@
       <el-table-column prop="orderNum" header-align="center" align="center" label="排序"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="220" :label="$t('action.operation')">
         <template slot-scope="scope">
-          <kt-button :label="$t('action.edit')" perms="sys:dept:edit" @click="handleEdit(scope.row)"/>
-          <kt-button :label="$t('action.delete')" perms="sys:dept:del" type="danger" @click="handleDelete(scope.row)"/>
-          <kt-button :label="$t('action.view')" perms="sys:dept:view" @click="handleView(scope.row)"/>
+          <kt-button :label="$t('action.edit')" perms="ROLE_CORE_DEPT_ADD_EDIT" @click="handleEdit(scope.row)"/>
+          <kt-button :label="$t('action.delete')" perms="ROLE_CORE_DEPT_DEL" type="danger" @click="handleDelete(scope.row)"/>
+          <kt-button :label="$t('action.view')" perms="ROLE_CORE_DEPT_EDIT_VIEW" @click="handleView(scope.row)"/>
         </template>
       </el-table-column>
     </el-table>

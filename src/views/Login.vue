@@ -7,8 +7,8 @@
       <!-- <lang-selector class="lang-selector"></lang-selector>    -->
     </span>
     <h2 class="title" style="padding-left:22px;" >系统登录</h2>
-    <el-form-item prop="account">
-      <el-input type="text" v-model="loginForm.account" auto-complete="off" placeholder="账号"></el-input>
+    <el-form-item prop="username">
+      <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="账号"></el-input>
     </el-form-item>
     <el-form-item prop="password">
       <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="密码"></el-input>
@@ -51,13 +51,13 @@ export default {
     return {
       loading: false,
       loginForm: {
-        account: 'admin',
-        password: 'admin',
+        username: 'superadmin',
+        password: '123456',
         captcha:'',
         src: ''
       },
       fieldRules: {
-        account: [
+        username: [
           { required: true, message: '请输入账号', trigger: 'blur' }
         ],
         password: [
@@ -73,32 +73,33 @@ export default {
   },
   methods: {
     login() {
-                  this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
-            this.$router.push('/')  // 登录成功，跳转到主页
-      // this.loading = true
-      // let userInfo = {account:this.loginForm.account, password:this.loginForm.password, captcha:this.loginForm.captcha}
-      // this.$api.login.login(userInfo).then((res) => {
-      //     if(res.msg != null) {
-      //       this.$message({
-      //         message: res.msg,
-      //         type: 'error'
-      //       })
-      //     } else {
-      //       Cookies.set('token', res.data.token) // 放置token到Cookie
-      //       sessionStorage.setItem('user', userInfo.account) // 保存用户到本地会话
-      //       this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
-      //       this.$router.push('/')  // 登录成功，跳转到主页
-      //     }
-      //     this.loading = false
-      //   }).catch((res) => {
-      //     this.$message({
-      //     message: res.message,
-      //     type: 'error'
-      //     })
-      //   });
+      this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
+      this.loading = true
+      let userInfo = {username:this.loginForm.username, password:this.loginForm.password, captcha:this.loginForm.captcha}
+      this.$api.login.login(userInfo).then((res) => {
+        if(res.msg != null) {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        } else {
+          Cookies.set('token', res.data.token) // 放置token到Cookie
+          sessionStorage.setItem('username', userInfo.username) // 保存用户到本地会话
+          this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
+          this.$router.push('/')  // 登录成功，跳转到主页
+        }
+        this.loading = false;
+      }).catch((res) => {
+        this.$message({
+        message: res.message,
+        type: 'error'
+        })
+        this.loading = false;
+      });
+      this.refreshCaptcha();
     },
     refreshCaptcha: function(){
-      //this.loginForm.src = this.global.baseUrl + "/captcha.jpg?t=" + new Date().getTime();
+      this.loginForm.src = this.global.baseUrl + "/captcha.jpg?t=" + new Date().getTime();
     },
     reset() {
       this.$refs.loginForm.resetFields()

@@ -20,9 +20,6 @@
       <el-dropdown class="user-info-dropdown" trigger="hover" @command="handleCommand">
         <span class="el-dropdown-link"><img :src="this.userAvatar" /> {{userName}}</span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="msg">{{$t("common.myMsg")}}</el-dropdown-item>
-          <el-dropdown-item command="config">{{$t("common.config")}}</el-dropdown-item>
-          <el-dropdown-item command="bakcup">{{$t("common.backupRestore")}}</el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">{{$t("common.logout")}}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -66,16 +63,7 @@ export default {
       this.$store.commit('setThemeColor', themeColor)
     },
     handleCommand(command) {
-      if('bakcup' === command) {
-        this.handleBackup()
-      }
-    },
-    // 打开备份还原界面
-    handleBackup: function() {
-      this.backupVisible = true
-      this.$nextTick(() => {
-          this.$refs.backup.init()
-      })
+
     },
     // 退出登录
     logout: function() {
@@ -83,7 +71,7 @@ export default {
         type: "warning"
       })
       .then(() => {
-        sessionStorage.removeItem("user")
+        sessionStorage.removeItem("username")
         this.$router.push("/login")
         this.$api.login.logout().then((res) => {
           }).catch(function(res) {
@@ -94,9 +82,9 @@ export default {
   },
   mounted() {
     this.sysName = "CMS Platform"
-    var user = sessionStorage.getItem("user")
-    if (user) {
-      this.userName = user
+    var username = sessionStorage.getItem("username")
+    if (username) {
+      this.userName = username
       this.userAvatar = require("@/assets/user.png")
     }
   },

@@ -7,10 +7,10 @@
 				<el-input v-model="filters.roleName" placeholder="角色名"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:role:view" type="primary" @click="findPage()"/>
+				<kt-button :label="$t('action.search')" perms="ROLE_CORE_ROLE_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.add')" perms="sys:role:add" type="primary" @click="handleAdd" />
+				<kt-button :label="$t('action.add')" perms="ROLE_CORE_ROLE_ADD_EDIT" type="primary" @click="handleAdd" />
 			</el-form-item>
 		</el-form>
 	</div>
@@ -26,9 +26,9 @@
 	<el-table-column prop="modifiedTime" label="修改时间" sortable="true" :formatter="dateFormat"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="240" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
-		<kt-button :label="$t('action.edit')" perms="sys:role:add" :size="size" @click="handleEdit(scope.row)" />
-		<kt-button :label="$t('action.delete')" perms="sys:role:del" :size="size" type="danger" @click="handleDelete(scope.row)" />
-		<kt-button :label="$t('action.view')" perms="sys:role:view" :size="size" @click="handleView(scope.row)" />
+		<kt-button :label="$t('action.edit')" perms="ROLE_CORE_ROLE_ADD_EDIT" :size="size" @click="handleEdit(scope.row)" />
+		<kt-button :label="$t('action.delete')" perms="ROLE_CORE_ROLE_DEL" :size="size" type="danger" @click="handleDelete(scope.row)" />
+		<kt-button :label="$t('action.view')" perms="ROLE_CORE_ROLE_EDIT_VIEW" :size="size" @click="handleView(scope.row)" />
 		</template>
 	</el-table-column>
 	</el-table>
@@ -73,9 +73,9 @@
 			<el-checkbox v-model="checkAll" @change="handleCheckAll" :disabled="this.selectRole.coreRoleId == null"><b>全选</b></el-checkbox>
 		</div>
 		<div style="float:right;padding-right:15px;padding-top:4px;padding-bottom:4px;">
-			<kt-button :label="$t('action.reset')" perms="sys:role:edit" type="primary" @click="resetSelection" 
-				:disabled="this.selectRole.coreRoleId == null"/>
-			<kt-button :label="$t('action.submit')" perms="sys:role:edit" type="primary" @click="submitAuthForm" 
+			<el-button size="mini" type="primary" @click="resetSelection"
+				:disabled="this.selectRole.coreRoleId == null">{{$t('action.reset')}}</el-button>
+			<kt-button :label="$t('action.submit')" perms="ROLE_CORE_ROLE_MENU_SAVE" type="primary" @click="submitAuthForm" 
 				:disabled="this.selectRole.coreRoleId == null" :loading="authLoading"/>
 		</div>
 	</div>

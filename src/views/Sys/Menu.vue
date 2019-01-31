@@ -7,10 +7,10 @@
 				<el-input v-model="filters.menuName" placeholder="名称"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="sys:menu:view" type="primary" @click="findTreeData()"/>
+        <el-button size="mini" type="primary" @click="findTreeData()">{{$t('action.search')}}</el-button>
 			</el-form-item>
 			<el-form-item>
-				<kt-button :label="$t('action.add')" perms="sys:menu:add" type="primary" @click="handleAdd"/>
+				<kt-button :label="$t('action.add')" perms="ROLE_CORE_MENU_ADD_EDIT" type="primary" @click="handleAdd"/>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -37,9 +37,9 @@
       <el-table-column prop="orderNum" header-align="center" align="center" label="排序"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="220" :label="$t('action.operation')">
         <template slot-scope="scope">
-          <kt-button :label="$t('action.edit')" perms="sys:menu:edit" @click="handleEdit(scope.row)"/>
-          <kt-button :label="$t('action.delete')" perms="sys:menu:del" type="danger" @click="handleDelete(scope.row)"/>
-          <kt-button :label="$t('action.view')" perms="sys:menu:view" @click="handleView(scope.row)"/>
+          <kt-button :label="$t('action.edit')" perms="ROLE_CORE_MENU_ADD_EDIT" @click="handleEdit(scope.row)"/>
+          <kt-button :label="$t('action.delete')" perms="ROLE_CORE_MENU_DEL" type="danger" @click="handleDelete(scope.row)"/>
+          <kt-button :label="$t('action.view')" perms="ROLE_CORE_MENU_EDIT_VIEW" @click="handleView(scope.row)"/>
         </template>
       </el-table-column>
     </el-table>
@@ -63,7 +63,7 @@
             </popup-tree-input>
         </el-form-item>
         <el-form-item v-if="dataForm.menuType != '0'" label="授权标识" prop="permission">
-          <el-input v-model="dataForm.permission" placeholder="如: sys:user:add, sys:user:edit, sys:user:delete" :readonly="viewFlag"></el-input>
+          <el-input v-model="dataForm.permission" placeholder="如: ROLE_CORE_ROLE_EDIT_VIEW" :readonly="viewFlag"></el-input>
         </el-form-item>
         <el-form-item v-if="dataForm.menuType == '1'" label="菜单路由" prop="menuUrl">
           <el-row>
