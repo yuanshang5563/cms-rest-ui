@@ -37,3 +37,11 @@ export const find = (params) => {
         params
     })
 }
+
+// 查找字典集合
+export const findAllDictInGroup = () => {
+    return axios({
+        url: '/sys/coreDictionaries/findAllDictInGroup',
+        method: 'get'
+    })
+}

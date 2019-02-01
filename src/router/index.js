@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/views/Login'
 import NotFound from '@/views/Error/404'
 import Forbidden from '@/views/Error/403'
+import ServerError from '@/views/Error/500'
 import Home from '@/views/Home'
 import Intro from '@/views/Intro/Intro'
 import api from '@/http/api'
@@ -31,14 +32,19 @@ const router = new Router({
       component: Login
     },
     {
+      path: '/403',
+      name: 'forbidden',
+      component: Forbidden
+    },
+    {
       path: '/404',
       name: 'notFound',
       component: NotFound
     },
     {
-      path: '/403',
-      name: 'forbidden',
-      component: Forbidden
+      path: '/500',
+      name: 'serverError',
+      component: ServerError
     }
   ],
   mode:'history'
@@ -88,10 +94,23 @@ function addDynamicMenuAndRoutes(userName, to, from) {
     // 保存菜单树
     store.commit('setNavTree', res.data)
   }).then(res => {
-    api.user.findPermissions({'userName':userName}).then(res => {
-      // 保存用户权限标识集合
-      store.commit('setPerms', res.data);
-    })
+    if(!store.state.app.permsLoaded) {
+      api.user.findPermissions({'userName':userName}).then(res => {
+        // 保存用户权限标识集合
+        store.commit('setPerms', res.data);
+        store.commit('permsLoaded', true);
+      })
+    }
+
+    if(!store.state.app.dictsLoaded) {
+      //登录成功，加载数据字典
+      api.dict.findAllDictInGroup().then((res) => {
+        store.commit('setDictData', res.data);
+        store.commit('dictsLoaded', true);
+      }).catch((res) => {
+        console.log("加载数据字典失败");
+      })
+    }
   })
   .catch(function(res) {
   })

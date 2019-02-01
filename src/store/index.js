@@ -7,13 +7,15 @@ import app from './modules/app'
 import iframe from './modules/iframe'
 import user from './modules/user'
 import menu from './modules/menu'
+import dict from './modules/dict'
 
 const store = new vuex.Store({
     modules: {
         app: app,
         iframe: iframe,
         user: user,
-        menu: menu
+        menu: menu,
+        dict: dict
     }
 })
 

@@ -11,9 +11,7 @@
 			</el-form-item>			
 			<el-form-item>
 				<el-select v-model="filters.sex" clearable placeholder="性别">
-					<el-option label="未知" value="sex.0"></el-option>
-					<el-option label="男" value="sex.1"></el-option>
-					<el-option label="女" value="sex.2"></el-option>
+					<el-option v-for="item in sexList" :key="item.dictCode" :label="item.dictValue" :value="item.dictCode"></el-option>
 				</el-select>
 			</el-form-item>		
 			<el-form-item>
@@ -43,11 +41,11 @@
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
 	<el-table-column prop="userName" label="用户名" sortable="true"></el-table-column>
 	<el-table-column prop="realName" label="真实姓名" sortable="true"></el-table-column>
-	<el-table-column prop="sex" label="性别" sortable="true"></el-table-column>
+	<el-table-column prop="sex" label="性别" sortable="true" :formatter="sexFormat"></el-table-column>
 	<el-table-column prop="birthday" label="生日" sortable="true" :formatter="birthdayFormat"></el-table-column>
 	<el-table-column prop="mobile" label="手机" sortable="true"></el-table-column>
 	<el-table-column prop="email" label="邮箱" sortable="true" width="220"></el-table-column>
-	<el-table-column prop="status" label="是否禁用" sortable="true"></el-table-column>
+	<el-table-column prop="status" label="是否禁用" sortable="true" :formatter="statusFormat"></el-table-column>
 	<!--
 	<el-table-column prop="createdTime" label="创建时间" sortable="true" :formatter="dateFormat"></el-table-column>
 	<el-table-column prop="modifiedTime" label="修改时间" sortable="true" :formatter="dateFormat"></el-table-column>
@@ -81,9 +79,7 @@
 			</el-form-item>	
 			<el-form-item label="性别" prop="sex">
 				<el-select v-model="dataForm.sex" clearable placeholder="请选择" style="width:100%" :disabled="viewFlag">
-					<el-option label="未知" value="sex.0"></el-option>
-					<el-option label="男" value="sex.1"></el-option>
-					<el-option label="女" value="sex.2"></el-option>
+					<el-option v-for="item in sexList" :key="item.dictCode" :label="item.dictValue" :value="item.dictCode"></el-option>
 				</el-select>
 			</el-form-item>	
 			<el-form-item label="生日" prop="birthday">
@@ -107,8 +103,7 @@
 			</el-form-item>
 			<el-form-item label="是否禁用" prop="status">
 				<el-select v-model="dataForm.status" clearable placeholder="请选择" style="width:100%" :disabled="viewFlag">
-					<el-option label="激活" value="0"></el-option>
-					<el-option label="禁用" value="1"></el-option>
+					<el-option v-for="item in statusList" :key="item.dictCode" :label="item.dictValue" :value="item.dictCode"></el-option>
 				</el-select>
 			</el-form-item>	
 			<el-form-item label="用户描述" prop="comment">
@@ -150,10 +145,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import PopupTreeInput from "@/components/PopupTreeInput"
 import KtButton from "@/views/Core/KtButton"
 import { format,formatDate } from "@/utils/datetime"
 import { isEmail,isMobile } from "@/utils/validate"
+import { formatSex,formatCoreUserStatus } from "@/utils/dictUtil"
 export default {
 	components:{
 		PopupTreeInput,
@@ -443,8 +440,24 @@ export default {
 		// 时间格式化
       	birthdayFormat: function (row, column, cellValue, index){
           	return formatDate(row[column.property])
+      	},
+		// 性别格式化
+      	sexFormat: function (row, column, cellValue, index){
+			let sexList = this.$store.state.dict.sex;
+          	return formatSex(row,sexList);
+      	},
+		// 状态格式化
+      	statusFormat: function (row, column, cellValue, index){
+			let statusList = this.$store.state.dict.coreUserStatus;
+          	return formatCoreUserStatus(row,statusList);
       	}
 	},
+	computed: {
+		...mapState({
+			sexList: state=>state.dict.sex,
+			statusList: state=>state.dict.coreUserStatus
+		})
+	},	
 	mounted() {
 		this.findPage();
 		this.findDeptTree()

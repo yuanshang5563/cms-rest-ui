@@ -20,7 +20,7 @@
 	<!--表格树内容栏-->
     <el-table :data="tableTreeDdata" stripe size="mini" style="width: 100%;" v-loading="loading" :element-loading-text="$t('action.loading')">
       <el-table-column prop="coreDictGroupId" header-align="center" align="center" width="80" label="ID"></el-table-column>
-      <table-tree-column prop="dictGroupName" header-align="center" treeKey="coreDictGroupId" parentKey="parentCoreDictGroupId" width="150" label="字典组名称"></table-tree-column>
+      <table-tree-column prop="dictGroupName" header-align="center" treeKey="coreDictGroupId" parentKey="parentCoreDictGroupId" width="300" label="字典组名称"></table-tree-column>
       <el-table-column prop="dictGroupCode" header-align="center" align="center" label="字典组代码"></el-table-column>
       <el-table-column prop="parentDictGroupNameName" header-align="center" align="center" width="120" label="上级字典组"></el-table-column>
       <el-table-column prop="orderNum" header-align="center" align="center" label="排序"></el-table-column>

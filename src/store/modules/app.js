@@ -4,7 +4,9 @@ export default {
         themeColor: "#14889A",  // 主题颜色
         oldThemeColor: "#14889A",   // 上一次主题颜色
         collapse:false,  // 导航栏收缩状态
-        menuRouteLoaded:false    // 菜单和路由是否已经加载
+        menuRouteLoaded:false,    // 菜单和路由是否已经加载
+        permsLoaded:false, // 权限是否已经加载
+        dictsLoaded:false // 字典是否已经加载
     },
     getters: {
         collapse(state){// 对应着上面state
@@ -21,6 +23,12 @@ export default {
         },
         menuRouteLoaded(state, menuRouteLoaded){  // 改变菜单和路由的加载状态
             state.menuRouteLoaded = menuRouteLoaded;
+        },
+        permsLoaded(state, permsLoaded){  // 改变权限的加载状态
+            state.permsLoaded = permsLoaded;
+        },
+        dictsLoaded(state, dictsLoaded){  // 改变字典的加载状态
+            state.dictsLoaded = dictsLoaded;
         }
     },
     actions: {

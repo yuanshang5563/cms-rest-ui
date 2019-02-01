@@ -73,7 +73,6 @@ export default {
   },
   methods: {
     login() {
-      this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
       this.loading = true
       let userInfo = {username:this.loginForm.username, password:this.loginForm.password, captcha:this.loginForm.captcha}
       this.$api.login.login(userInfo).then((res) => {
@@ -86,6 +85,8 @@ export default {
           Cookies.set('token', res.data.token) // 放置token到Cookie
           sessionStorage.setItem('username', userInfo.username) // 保存用户到本地会话
           this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
+          this.$store.commit('permsLoaded', false)
+          this.$store.commit('dictsLoaded', false)
           this.$router.push('/')  // 登录成功，跳转到主页
         }
         this.loading = false;

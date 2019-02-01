@@ -61,7 +61,7 @@ export default function $axios(options) {
           error = errorInfo.data  // 页面那边catch的时候就能拿到详细的错误信息,看最下边的Promise.reject
           const errorStatus = errorInfo.status; // 404 403 500 ...
           router.push({
-            path: `/error/${errorStatus}`
+            path: `/${errorStatus}`
           })
         }
         return Promise.reject(error) // 在调用的那边可以拿到(catch)你想返回的错误信息
@@ -136,7 +136,15 @@ export default function $axios(options) {
             default:
           }
         }
-        console.error(err)
+        //重定向到错误页面
+        const errorInfo = err.response
+        if (errorInfo) {
+          const errorStatus = errorInfo.status; // 404 403 500 ...
+          router.push({
+            path: `/${errorStatus}`
+          })
+        }
+        //console.error(err)
         return Promise.reject(err) // 返回接口返回的错误信息
       }
     )

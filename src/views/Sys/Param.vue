@@ -8,8 +8,7 @@
 			</el-form-item>	
 			<el-form-item>
 				<el-select v-model="filters.paramType" clearable placeholder="参数类型">
-					<el-option label="系统参数" value="sys"></el-option>
-					<el-option label="用户参数" value="usr"></el-option>
+					<el-option v-for="item in paramTypeList" :key="item.dictCode" :label="item.dictValue" :value="item.dictCode"></el-option>
 				</el-select>
 			</el-form-item>				
 			<el-form-item>
@@ -30,7 +29,7 @@
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
 	<el-table-column prop="paramName" label="参数名称" sortable="true"></el-table-column>
-	<el-table-column prop="paramType" label="参数类型" sortable="true"></el-table-column>
+	<el-table-column prop="paramType" label="参数类型" sortable="true" :formatter="paramTypeFormat"></el-table-column>
 	<el-table-column prop="paramCode" label="参数代码" sortable="true"></el-table-column>
 	<el-table-column prop="paramValue" label="参数值" sortable="true"></el-table-column>
 	<el-table-column prop="createdTime" label="创建时间" sortable="true" :formatter="dateFormat"></el-table-column>
@@ -57,8 +56,7 @@
 			</el-form-item>
 			<el-form-item label="参数类型" prop="paramType">
 				<el-select v-model="dataForm.paramType" clearable placeholder="请选择" style="width:100%" :disabled="viewFlag">
-					<el-option label="系统参数" value="sys"></el-option>
-					<el-option label="用户参数" value="usr"></el-option>
+					<el-option v-for="item in paramTypeList" :key="item.dictCode" :label="item.dictValue" :value="item.dictCode"></el-option>
 				</el-select>
 			</el-form-item>								
 			<el-form-item label="参数代码" prop="paramCode">
@@ -87,9 +85,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import PopupTreeInput from "@/components/PopupTreeInput"
 import KtButton from "@/views/Core/KtButton"
 import { format,formatDate } from "@/utils/datetime"
+import { formatParamType } from "@/utils/dictUtil"
 export default {
 	components:{
 		PopupTreeInput,
@@ -224,7 +224,17 @@ export default {
       	dateFormat: function (row, column, cellValue, index){
           	return format(row[column.property])
       	},
+		// 参数类型格式化
+      	paramTypeFormat: function (row, column, cellValue, index){
+			let paramTypeList = this.$store.state.dict.paramType;
+          	return formatParamType(row,paramTypeList);
+      	}
 	},
+	computed: {
+		...mapState({
+			paramTypeList: state=>state.dict.paramType,
+		})
+	},	
 	mounted() {
 		this.findPage();
 	}
