@@ -8,6 +8,7 @@ import iframe from './modules/iframe'
 import user from './modules/user'
 import menu from './modules/menu'
 import dict from './modules/dict'
+import footballLeagueMatch from './modules/crawler/footballLeagueMatch'
 
 const store = new vuex.Store({
     modules: {
@@ -15,7 +16,8 @@ const store = new vuex.Store({
         iframe: iframe,
         user: user,
         menu: menu,
-        dict: dict
+        dict: dict,
+        footballLeagueMatch:footballLeagueMatch
     }
 })
 

@@ -4,7 +4,7 @@
       <el-carousel-item class="carousel-item-intro">
         <h2>项目介绍</h2>
         <ul>
-          <li>test</li>
+          <li>球赛数据爬取，分析</li>
         </ul>
       </el-carousel-item>
     </el-carousel>

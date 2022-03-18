@@ -10,6 +10,7 @@ import * as dict from './moudules/dict'
 import * as log from './moudules/log'
 import * as dictGroup from './moudules/dictGroup'
 import * as param from './moudules/param'
+import * as footballLeagueMatch from './moudules/crawler/footballLeagueMatch'
 
 
 // 默认全部导出
@@ -22,5 +23,6 @@ export default {
     dict,
     dictGroup,
     log,
-    param
+    param,
+    footballLeagueMatch
 }
