@@ -6,11 +6,11 @@
         "doc": "Document",
         "blog": "Blog",
         "projectRepo": "Project",
-        "myMsg": "My Message",
+        "myMsg": "MyMessage",
         "config": "Config",
         "backup": "Backup",  
         "restore": "Restore",  
-        "backupRestore": "Backup Restore",  
+        "backupRestore": "BackupRestore",  
         "versionName": "Version",  
         "exit": "Exit"
     },
@@ -20,7 +20,7 @@
         "edit": "Edit",
         "delete": "Delete",
         "view": "View",
-        "batchDelete": "Batch Delete",
+        "batchDelete": "BatchDelete",
         "search": "Search",
         "loading": "loading",
         "submit": "Submit",
@@ -30,12 +30,16 @@
         "resetPass": "resetPass"
     },
     "sys": {
-        "sysMng": "System Manage",
-        "userMng": "User Manage",
-        "deptMng": "Dept Manage",
-        "roleMng": "Role Manage",
-        "menuMng": "Menu Manage",
-        "logMng": "Log Manage",
-        "sysMonitor": "System Monitor"
+        "sysMng": "SystemManage",
+        "userMng": "UserManage",
+        "deptMng": "DeptManage",
+        "roleMng": "RoleManage",
+        "menuMng": "MenuManage",
+        "logMng": "LogManage",
+        "sysMonitor": "SystemMonitor"
+    },
+    "crawler": {
+        "seasonMng": "SeasonManage",
+        "playerMng": "PlayerManage"
     }
 }

@@ -17,7 +17,7 @@
       <!-- 语言切换 -->
       <lang-selector class="lang-selector"></lang-selector>   
       <!-- 用户信息 -->
-      <el-dropdown class="user-info-dropdown" trigger="hover" @command="handleCommand">
+      <el-dropdown class="user-info-dropdown" trigger="click">
         <span class="el-dropdown-link"><img :src="this.userAvatar" /> {{userName}}</span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item divided @click.native="logout">{{$t("common.logout")}}</el-dropdown-item>
@@ -61,9 +61,6 @@ export default {
     // 切换主题
     onThemeChange: function(themeColor) {
       this.$store.commit('setThemeColor', themeColor)
-    },
-    handleCommand(command) {
-
     },
     // 退出登录
     logout: function() {

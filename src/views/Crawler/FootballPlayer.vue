@@ -4,13 +4,16 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
-				<el-input v-model="filters.footballLeagueMatchName" placeholder="联赛名称"></el-input>
-			</el-form-item>
+				<el-input v-model="filters.teamName" placeholder="球队名称"></el-input>
+			</el-form-item>		
 			<el-form-item>
-				<el-input v-model="filters.regionName" placeholder="联赛地区"></el-input>
-			</el-form-item>				
+				<el-input v-model="filters.footballPlayerName" placeholder="球员名称"></el-input>
+			</el-form-item>		
 			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_LIST" type="primary" @click="findPage()"/>
+				<el-input v-model="filters.footballPlayerType" placeholder="球员类型"></el-input>
+			</el-form-item>							
+			<el-form-item>
+				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_PLAYER_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -20,14 +23,12 @@
 		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
-	<el-table-column prop="footballLeagueMatchName" label="联赛名称" sortable="true"></el-table-column>
-	<el-table-column prop="regionName" label="联赛地区" sortable="true"></el-table-column>
-	<el-table-column prop="footballLeagueMatchLevel" label="联赛级别" sortable="true"></el-table-column>
-	<el-table-column prop="leagueMatchUrl" label="联赛URL" sortable="true" width="220"></el-table-column>
+	<el-table-column prop="teamName" label="球队名称" sortable="true"></el-table-column>
+	<el-table-column prop="footballPlayerName" label="球员名称" sortable="true"></el-table-column>
+	<el-table-column prop="footballPlayerType" label="球员类型" sortable="true"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
-		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_VIEW" :size="size" @click="handleView(scope.row)" />
-		<kt-button :label="$t('crawler.seasonMng')" perms="ROLE_FOOTBALL_SEASON_LIST" :size="size" @click="handleSeasonMan(scope.row)" />
+		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_PLAYER_VIEW" :size="size" @click="handleView(scope.row)" />
 		</template>
 	</el-table-column>
 	</el-table>
@@ -40,18 +41,21 @@
 	<!--新增编辑界面-->
 	<el-dialog :title="dialogTitle" width="40%" :visible.sync="dialogVisible" :close-on-click-modal="false">
 		<el-form :model="dataForm" label-width="80px" ref="dataForm" :size="size" label-position="right">
-			<el-form-item label="联赛名称" prop="footballLeagueMatchName">
-				<el-input v-model="dataForm.footballLeagueMatchName" auto-complete="off" :readonly="viewFlag"></el-input>
+			<el-form-item label="球队名称" prop="teamName">
+				<el-input v-model="dataForm.teamName" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>
-			<el-form-item label="联赛地区" prop="regionName">
-				<el-input v-model="dataForm.regionName" auto-complete="off" :readonly="viewFlag"></el-input>
+			<el-form-item label="球队别名" prop="footballPlayerName">
+				<el-input v-model="dataForm.footballPlayerName" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>			
+			<el-form-item label="球员类型" prop="footballPlayerType">
+				<el-input v-model="dataForm.footballPlayerType" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>		
+			<el-form-item label="是否离队" prop="activeFlag">
+				<el-input v-model="dataForm.activeFlag" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>	
-			<el-form-item label="联赛级别" prop="footballLeagueMatchLevel">
-				<el-input v-model="dataForm.footballLeagueMatchLevel" auto-complete="off" :readonly="viewFlag"></el-input>
-			</el-form-item>
-			<el-form-item label="联赛URL" prop="leagueMatchUrl">
-				<el-input v-model="dataForm.leagueMatchUrl" auto-complete="off" :readonly="viewFlag"></el-input>
-			</el-form-item>
+			<el-form-item label="雷达Id" prop="entityId">
+				<el-input v-model="dataForm.entityId" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>								
 		</el-form>
 		<div slot="footer" class="dialog-footer">
 			<el-button :size="size" @click.native="dialogVisible = false">{{$t('action.cancel')}}</el-button>		
@@ -62,7 +66,6 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
-
 export default {
 	components:{
 		KtButton
@@ -71,8 +74,10 @@ export default {
 		return {
 			size: 'small',
 			filters: {
-				footballLeagueMatchName: '',
-				regionName: ''
+				teamName: '',
+				footballPlayerName: '',
+				footballPlayerType: '',
+				footballTeamId: ''
 			},
 			pageRequest: { pageNum: 1, pageSize: 10 },
 			total: 0,
@@ -84,11 +89,13 @@ export default {
 			viewFlag: false,//查看标志
 			// 新增,编辑,查看的界面数据
 			dataForm: {
-				footballLeagueMatchId: '',
-				footballLeagueMatchName: '',
-				footballLeagueMatchLevel: '',
-				regionName: '',
-				leagueMatchUrl: ''
+				footballPlayerId: '',
+				footballPlayerName: '',
+				footballTeamId: '',
+				footballPlayerType: '',
+				entityId: '',
+				teamName: '',
+				activeFlag: false
 			}
 		}
 	},
@@ -96,9 +103,10 @@ export default {
 		// 获取分页数据
 		findPage: function (data) {
 			this.loading = true;
-			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,footballLeagueMatchName:this.filters.footballLeagueMatchName,
-			regionName:this.filters.regionName};
-			this.$api.footballLeagueMatch.findPage(param).then((res) => {
+			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,teamName:this.filters.teamName,
+			footballPlayerName:this.filters.footballPlayerName,footballPlayerType:this.filters.footballPlayerType,
+			footballTeamId:this.filters.footballTeamId};
+			this.$api.footballPlayer.findPage(param).then((res) => {
 				this.loading = false;
 				this.pageResult = res.data.list;
 				this.total= res.data.total;
@@ -119,19 +127,18 @@ export default {
 			this.dialogTitle = "查看"
 			this.viewFlag = true;
 			let _this = this;
-			this.$api.footballLeagueMatch.find({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+			this.$api.footballPlayer.find({footballPlayerId:row.footballPlayerId}).then(res => {
 				Object.assign(_this.dataForm, res.data);
 			});	
-		},
-		// 打开该联赛的赛季管理界面
-		handleSeasonMan: function (row) {
-			//this.$router.push({name:'赛季管理',params:{leagueMatchId:row.footballLeagueMatchId}});
-			this.$router.push({path:'FootballSeason',query:{leagueMatchId:row.footballLeagueMatchId}});
 		}
 	},
 	computed: {
 	},	
 	mounted() {
+		let footballTeamId = this.$route.query.footballTeamId;
+		if(null != footballTeamId && footballTeamId.length > 0){
+			this.filters.footballTeamId = footballTeamId;
+		}
 		this.findPage();
 	}
 }

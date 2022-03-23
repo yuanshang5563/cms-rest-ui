@@ -1,12 +1,12 @@
 import axios from '../../axios'
 
 /* 
- * 联赛管理模块
+ * 球队管理模块
  */
 // 分页查询
 export const findPage = (data) => {
     return axios({
-        url: '/crawler/footballLeagueMatchController/findPage',
+        url: '/crawler/footballPlayerController/findPage',
         method: 'post',
         data
     })
@@ -14,7 +14,7 @@ export const findPage = (data) => {
 // 查找用户
 export const find = (params) => {
     return axios({
-        url: '/crawler/footballLeagueMatchController/find',
+        url: '/crawler/footballPlayerController/find',
         method: 'get',
         params
     })

@@ -37,5 +37,9 @@
         "menuMng": "菜单管理",
         "logMng": "日志管理",
         "sysMonitor": "系统监控"
+    },
+    "crawler": {
+        "seasonMng": "赛季管理",
+        "playerMng": "球员管理"
     }
 }

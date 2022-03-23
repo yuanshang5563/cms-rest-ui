@@ -17,7 +17,7 @@
       <el-col :span="12">
         <el-form-item prop="captcha">
           <el-input type="test" v-model="loginForm.captcha" auto-complete="off" placeholder="验证码, 单击图片刷新"
-            style="width: 100%;">
+            style="width: 100%;" @keyup.enter.native="login">
           </el-input>
         </el-form-item>
       </el-col>

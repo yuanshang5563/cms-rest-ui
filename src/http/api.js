@@ -11,6 +11,10 @@ import * as log from './moudules/log'
 import * as dictGroup from './moudules/dictGroup'
 import * as param from './moudules/param'
 import * as footballLeagueMatch from './moudules/crawler/footballLeagueMatch'
+import * as footballSeason from './moudules/crawler/footballSeason'
+import * as footballTeam from './moudules/crawler/footballTeam'
+import * as footballPlayer from './moudules/crawler/footballPlayer'
+import * as footballCrawlerManage from './moudules/crawler/footballCrawlerManage'
 
 
 // 默认全部导出
@@ -24,5 +28,9 @@ export default {
     dictGroup,
     log,
     param,
-    footballLeagueMatch
+    footballLeagueMatch,
+    footballSeason,
+    footballTeam,
+    footballPlayer,
+    footballCrawlerManage
 }
