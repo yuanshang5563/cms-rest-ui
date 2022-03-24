@@ -151,38 +151,38 @@ function addDynamicRoutes (menuList = [], routes = []) {
         component: null,
         name: menuList[i].menuName
       }
-      let path = getIFramePath(menuList[i].menuUrl)
+      let path = getIFramePath(menuList[i].menuUrl);
       if (path) {
         // 如果是嵌套页面, 通过iframe展示
-        route['path'] = path
-        route['component'] = resolve => require([`@/views/IFrame/IFrame`], resolve)
+        route['path'] = path;
+        route['component'] = resolve => require([`@/views/IFrame/IFrame`], resolve);
         // 存储嵌套页面路由路径和访问URL
-        let url = getIFrameUrl(menuList[i].menuUrl)
-        let iFrameUrl = {'path':path, 'url':url}
-        store.commit('addIFrameUrl', iFrameUrl)
+        let url = getIFrameUrl(menuList[i].menuUrl);
+        let iFrameUrl = {'path':path, 'url':url};
+        store.commit('addIFrameUrl', iFrameUrl);
       } else {
        try {
          // 根据菜单URL动态加载vue组件，这里要求vue组件须按照url路径存储
          // 如url="sys/user"，则组件路径应是"@/views/sys/user.vue",否则组件加载不到
-         let array = menuList[i].menuUrl.split('/')
-         let url = ''
+         let array = menuList[i].menuUrl.split('/');
+         let url = '';
          for(let i=0; i<array.length; i++) {
-            url += array[i].substring(0,1).toUpperCase() + array[i].substring(1) + '/'
+            url += array[i].substring(0,1).toUpperCase() + array[i].substring(1) + '/';
          }
-         url = url.substring(0, url.length - 1)
-         route['component'] = resolve => require([`@/views/${url}`], resolve)
+         url = url.substring(0, url.length - 1);
+         route['component'] = resolve => require([`@/views/${url}`], resolve);
        } catch (e) {
        }
      }
-     routes.push(route)
+     routes.push(route);
    }
  }
  if (temp.length >= 1) {
    addDynamicRoutes(temp, routes)
  } else {
-   console.log('动态路由加载...')
-   console.log(routes)
-   console.log('动态路由加载完成.')
+   console.log('动态路由加载...');
+   console.log(routes);
+   console.log('动态路由加载完成.');
  }
  return routes
 }

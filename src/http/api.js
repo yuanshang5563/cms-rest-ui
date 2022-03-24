@@ -15,6 +15,7 @@ import * as footballSeason from './moudules/crawler/footballSeason'
 import * as footballTeam from './moudules/crawler/footballTeam'
 import * as footballPlayer from './moudules/crawler/footballPlayer'
 import * as footballCrawlerManage from './moudules/crawler/footballCrawlerManage'
+import * as footballSeasonCategory from './moudules/crawler/footballSeasonCategory'
 
 
 // 默认全部导出
@@ -32,5 +33,6 @@ export default {
     footballSeason,
     footballTeam,
     footballPlayer,
-    footballCrawlerManage
+    footballCrawlerManage,
+    footballSeasonCategory
 }

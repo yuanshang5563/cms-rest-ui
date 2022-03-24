@@ -3,6 +3,13 @@ import axios from '../../axios'
 /* 
  * 总体爬虫管理模块
  */
+// 联赛爬虫
+export const handleLeagueMatchCrawler = () => {
+    return axios({
+        url: '/crawler/footballLeagueMatchController/startLeagueMatchCrawler',
+        method: 'get'
+    })
+}
 // 赛季爬虫
 export const handleSeasonCrawler = () => {
     return axios({

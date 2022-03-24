@@ -8,7 +8,10 @@
 			</el-form-item>
 			<el-form-item>
 				<el-input v-model="filters.regionName" placeholder="联赛地区"></el-input>
-			</el-form-item>				
+			</el-form-item>	
+			<el-form-item>
+				<kt-button :label="$t('crawler.changeCraw')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_LIST" type="primary" @click="changeCrawlerOrManage()"/>
+			</el-form-item>						
 			<el-form-item>
 				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
@@ -20,15 +23,25 @@
 		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
-	<el-table-column prop="footballLeagueMatchName" label="联赛名称" sortable="true"></el-table-column>
-	<el-table-column prop="regionName" label="联赛地区" sortable="true"></el-table-column>
-	<el-table-column prop="footballLeagueMatchLevel" label="联赛级别" sortable="true"></el-table-column>
-	<el-table-column prop="leagueMatchUrl" label="联赛URL" sortable="true" width="220"></el-table-column>
-	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
+	<el-table-column prop="footballLeagueMatchName" label="联赛名称"></el-table-column>
+	<el-table-column prop="regionName" label="联赛地区"></el-table-column>
+	<el-table-column prop="footballLeagueMatchLevel" label="联赛级别"></el-table-column>
+	<el-table-column prop="leagueMatchUrl" label="联赛URL" width="220"></el-table-column>
+	<el-table-column :label="$t('action.operation')" width="520" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
+		<div v-if="show">
 		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_VIEW" :size="size" @click="handleView(scope.row)" />
 		<kt-button :label="$t('crawler.seasonMng')" perms="ROLE_FOOTBALL_SEASON_LIST" :size="size" @click="handleSeasonMan(scope.row)" />
-		</template>
+		<kt-button :label="$t('crawler.seasonCateMng')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" :size="size" @click="handleSeasonCateMan(scope.row)" />
+		</div>
+		<div v-if="!show">
+		<kt-button :label="$t('crawler.seasonCraw')" perms="ROLE_FOOTBALL_SEASON_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startSeasonCrawler(scope.row)" />
+		<kt-button :label="$t('crawler.seasonCateCraw')" perms="ROLE_FOOTBALL_SEASON_CATE_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startSeasonCategoryCrawler(scope.row)" />
+		<kt-button :label="$t('crawler.roundCraw')" perms="ROLE_FOOTBALL_SEASON_ROUND_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startSeasonRoundCrawler(scope.row)" />
+		<kt-button :label="$t('crawler.scoreCraw')" perms="ROLE_FOOTBALL_SCORE_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startScoreCrawler(scope.row)" />
+		<kt-button :label="$t('crawler.scoreDetailCraw')" perms="ROLE_FOOTBALL_SCORE_DETAIL_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startScoreDetailCrawler(scope.row)" />
+		</div>
+		</template>		
 	</el-table-column>
 	</el-table>
 	<!--分页栏-->
@@ -69,6 +82,7 @@ export default {
 	},
 	data() {				
 		return {
+			show: true,//该列是否显示
 			size: 'small',
 			filters: {
 				footballLeagueMatchName: '',
@@ -127,7 +141,48 @@ export default {
 		handleSeasonMan: function (row) {
 			//this.$router.push({name:'赛季管理',params:{leagueMatchId:row.footballLeagueMatchId}});
 			this.$router.push({path:'FootballSeason',query:{leagueMatchId:row.footballLeagueMatchId}});
-		}
+		},
+		// 打开该联赛的赛季类别管理界面
+		handleSeasonCateMan: function (row) {
+			this.$router.push({path:'FootballSeasonCategory',query:{leagueMatchId:row.footballLeagueMatchId}});
+		},
+		//切换列表的按钮
+		changeCrawlerOrManage: function () {
+			let showVal = this.show;
+			this.show = !showVal;
+		},
+		startSeasonCrawler:function(row){
+				this.$api.footballLeagueMatch.handleSeasonCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},
+		startSeasonCategoryCrawler:function(row){
+				this.$api.footballLeagueMatch.handleSeasonCategoryCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},  
+		startSeasonRoundCrawler:function(row){
+				this.$api.footballLeagueMatch.handleSeasonRoundCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},  
+		startScoreCrawler:function(row){
+				this.$api.footballLeagueMatch.handleScoreCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},  
+		startScoreDetailCrawler:function(row){
+				this.$api.footballLeagueMatch.handleScoreDetailCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},        
+		resCommonFun: function(res){
+			if(res.code == 500){
+			this.$message.error(res.msg);
+			}else{
+			this.$message({message: res.msg,type: 'success' });
+			}    
+		}		
 	},
 	computed: {
 	},	

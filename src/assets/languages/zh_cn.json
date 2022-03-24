@@ -27,7 +27,8 @@
         "comfirm": "确定",
         "cancel": "取消",
         "reset": "重置",
-        "resetPass": "重置密码"
+        "resetPass": "重置密码",
+        "clearParams": "清除参数"
     },
     "sys": {
         "sysMng": "系统管理",
@@ -40,6 +41,13 @@
     },
     "crawler": {
         "seasonMng": "赛季管理",
-        "playerMng": "球员管理"
+        "seasonCateMng": "赛季类别管理",
+        "playerMng": "球员管理",
+        "changeCraw": "切换爬虫或管理",
+        "seasonCraw": "赛季爬虫",
+        "seasonCateCraw": "类别爬虫",
+        "roundCraw": "轮数爬虫",
+        "scoreCraw": "比分爬虫",
+        "scoreDetailCraw": "详情爬虫"
     }
 }

@@ -62,7 +62,7 @@
               :nodeKey="''+dataForm.parentCoreMenuId" :currentChangeHandle="handleTreeSelectChange" :disabled="viewFlag">
             </popup-tree-input>
         </el-form-item>
-        <el-form-item v-if="dataForm.menuType != '0'" label="授权标识" prop="permission">
+        <el-form-item v-if="dataForm.menuType == '2'" label="授权标识" prop="permission">
           <el-input v-model="dataForm.permission" placeholder="如: ROLE_CORE_ROLE_EDIT_VIEW" :readonly="viewFlag"></el-input>
         </el-form-item>
         <el-form-item v-if="dataForm.menuType == '1'" label="菜单路由" prop="menuUrl">

@@ -20,3 +20,43 @@ export const find = (params) => {
     })
 }
 
+// 赛季爬虫
+export const handleSeasonCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballSeasonController/startSeasonCrawlerByLeagueMatch',
+        method: 'get',
+        params
+    })
+}
+//类别爬虫
+export const handleSeasonCategoryCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballSeasonCategoryController/startSeasonCategoryCrawlerByLeagueMatch',
+        method: 'get',
+        params
+    })
+}
+//轮数爬虫
+export const handleSeasonRoundCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballSeasonCategoryController/startSeasonRoundCrawlerByLeagueMatch',
+        method: 'get',
+        params
+    })
+}
+//比分爬虫
+export const handleScoreCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballScoreController/startScoreCrawlerByLeagueMatch',
+        method: 'get',
+        params
+    })
+}
+//详情爬虫
+export const handleScoreDetailCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballScoreDetailController/startSeasonDetailCrawlerByLeagueMatch',
+        method: 'get',
+        params
+    })
+}

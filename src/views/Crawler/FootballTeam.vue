@@ -20,9 +20,9 @@
 		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
-	<el-table-column prop="teamName" label="球队名称" sortable="true"></el-table-column>
-	<el-table-column prop="teamOtherName" label="球队别名" sortable="true"></el-table-column>
-	<el-table-column prop="country" label="所属国家" sortable="true"></el-table-column>
+	<el-table-column prop="teamName" label="球队名称"></el-table-column>
+	<el-table-column prop="teamOtherName" label="球队别名"></el-table-column>
+	<el-table-column prop="country" label="所属国家"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
 		<kt-button :label="$t('crawler.playerMng')" perms="ROLE_FOOTBALL_PLAYER_LIST" :size="size" @click="handlePlayerMan(scope.row)" />

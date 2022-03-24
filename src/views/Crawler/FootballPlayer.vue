@@ -23,9 +23,9 @@
 		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
-	<el-table-column prop="teamName" label="球队名称" sortable="true"></el-table-column>
-	<el-table-column prop="footballPlayerName" label="球员名称" sortable="true"></el-table-column>
-	<el-table-column prop="footballPlayerType" label="球员类型" sortable="true"></el-table-column>
+	<el-table-column prop="teamName" label="球队名称"></el-table-column>
+	<el-table-column prop="footballPlayerName" label="球员名称"></el-table-column>
+	<el-table-column prop="footballPlayerType" label="球员类型"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
 		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_PLAYER_VIEW" :size="size" @click="handleView(scope.row)" />

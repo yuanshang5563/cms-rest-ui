@@ -5,10 +5,13 @@
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
 				<el-input v-model="filters.footballSeasonName" placeholder="赛季名称"></el-input>
-			</el-form-item>			
+			</el-form-item>	
 			<el-form-item>
-				<kt-button :label="$t('action.clearParams')" perms="ROLE_FOOTBALL_SEASON_LIST" type="primary" @click="clearQueryParams()"/>
-				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SEASON_LIST" type="primary" @click="findPage()"/>
+				<el-input v-model="filters.footballSeasonCategoryName" placeholder="赛季类别名称"></el-input>
+			</el-form-item>						
+			<el-form-item>
+				<kt-button :label="$t('action.clearParams')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="clearQueryParams()"/>
+				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -20,13 +23,12 @@
 	<el-table-column type="index" width="60" label="序号"></el-table-column>
 	<el-table-column prop="footballLeagueMatchName" label="联赛名称"></el-table-column>
 	<el-table-column prop="footballSeasonName" label="赛季名称"></el-table-column>
-	<el-table-column prop="footballSeasonUrl" label="赛季URL" width="220"></el-table-column>
-	<el-table-column prop="seasonBeginDate" label="赛季开始时间" :formatter="dateFormat"></el-table-column>
-	<el-table-column prop="seasonEndDate" label="赛季结束时间" :formatter="dateFormat"></el-table-column>
+	<el-table-column prop="footballSeasonCategoryName" label="赛季类别名称"></el-table-column>
+	<el-table-column prop="footballSeasonCategoryUrl" label="赛季类别URL"></el-table-column>
+	<el-table-column prop="roundCount" label="赛季类别总轮数"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
-		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_SEASON_VIEW" :size="size" @click="handleView(scope.row)" />
-		<kt-button :label="$t('crawler.seasonCateMng')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" :size="size" @click="handleSeasonCateMan(scope.row)" />
+		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_VIEW" :size="size" @click="handleView(scope.row)" />
 		</template>
 	</el-table-column>
 	</el-table>
@@ -41,19 +43,19 @@
 		<el-form :model="dataForm" label-width="80px" ref="dataForm" :size="size" label-position="right">
 			<el-form-item label="联赛名称" prop="footballLeagueMatchName" :label-width="labelWidth">
 				<el-input v-model="dataForm.footballLeagueMatchName" auto-complete="off" :readonly="viewFlag"></el-input>
-			</el-form-item>
+			</el-form-item>			
 			<el-form-item label="赛季名称" prop="footballSeasonName" :label-width="labelWidth">
 				<el-input v-model="dataForm.footballSeasonName" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>	
-			<el-form-item label="联赛URL" prop="footballSeasonUrl" :label-width="labelWidth">
-				<el-input v-model="dataForm.footballSeasonUrl" auto-complete="off" :readonly="viewFlag"></el-input>
+			<el-form-item label="赛季类别名称" prop="footballSeasonCategoryName" :label-width="labelWidth">
+				<el-input v-model="dataForm.footballSeasonCategoryName" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>			
+			<el-form-item label="赛季类别URL" prop="footballSeasonCategoryUrl" :label-width="labelWidth">
+				<el-input v-model="dataForm.footballSeasonCategoryUrl" auto-complete="off" :readonly="viewFlag"></el-input>
 			</el-form-item>
-			<el-form-item label="赛季开始时间" prop="seasonBeginDate" :label-width="labelWidth" v-show="viewFlag">
-				<el-date-picker v-model="dataForm.seasonBeginDate" type="date" auto-complete="off" style="width:100%" :readonly="true"></el-date-picker>
-			</el-form-item>
-			<el-form-item label="赛季结束时间" prop="seasonEndDate" :label-width="labelWidth" v-show="viewFlag">
-				<el-date-picker v-model="dataForm.seasonEndDate" type="date" auto-complete="off" style="width:100%" :readonly="true"></el-date-picker>
-			</el-form-item>				
+			<el-form-item label="赛季类别总轮数" prop="roundCount" :label-width="labelWidth">
+				<el-input v-model="dataForm.roundCount" auto-complete="off" :readonly="viewFlag"></el-input>
+			</el-form-item>							
 		</el-form>
 		<div slot="footer" class="dialog-footer">
 			<el-button :size="size" @click.native="dialogVisible = false">{{$t('action.cancel')}}</el-button>		
@@ -64,7 +66,6 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
-import { formatDate } from "@/utils/datetime"
 import { isBlank } from "@/utils/stringUtil"
 export default {
 	components:{
@@ -75,7 +76,9 @@ export default {
 			labelWidth: '20%',
 			size: 'small',
 			filters: {
-				footballSeasonName: '',
+				footballSeasonCategoryName: '',
+				footballSeasonId: '',
+				footballSeasonName :'',
 				leagueMatchId: ''
 			},
 			pageRequest: { pageNum: 1, pageSize: 10 },
@@ -88,13 +91,13 @@ export default {
 			viewFlag: false,//查看标志
 			// 新增,编辑,查看的界面数据
 			dataForm: {
+				footballSeasonCategoryId: '',
+				footballSeasonCategoryName: '',
+				footballSeasonCategoryUrl: '',
 				footballSeasonId: '',
+				roundCount: 0,
 				footballSeasonName: '',
-				footballLeagueMatchId: '',
-				footballLeagueMatchName: '',
-				footballSeasonUrl: '',
-				seasonBeginDate: null,
-				seasonEndDate : null
+				footballLeagueMatchName: ''
 			}
 		}
 	},
@@ -103,8 +106,9 @@ export default {
 		findPage: function (data) {
 			this.loading = true;
 			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,footballSeasonName:this.filters.footballSeasonName,
-			leagueMatchId:this.filters.leagueMatchId};
-			this.$api.footballSeason.findPage(param).then((res) => {
+			footballSeasonId:this.filters.footballSeasonId,footballSeasonCategoryName:this.filters.footballSeasonCategoryName,
+			footballLeagueMatchId:this.filters.leagueMatchId};
+			this.$api.footballSeasonCategory.findPage(param).then((res) => {
 				this.loading = false;
 				this.pageResult = res.data.list;
 				this.total= res.data.total;
@@ -125,22 +129,17 @@ export default {
 			this.dialogTitle = "查看"
 			this.viewFlag = true;
 			let _this = this;
-			this.$api.footballSeason.find({footballSeasonId:row.footballSeasonId}).then(res => {
+			this.$api.footballSeasonCategory.find({footballSeasonCategoryId:row.footballSeasonCategoryId}).then(res => {
 				Object.assign(_this.dataForm, res.data);
 			});	
 		},
-		// 时间格式化
-		dateFormat: function (row, column, cellValue, index){
-			return formatDate(row[column.property])
-		},
-		// 打开该赛季的赛季类别管理界面
-		handleSeasonCateMan: function (row) {
-			this.$router.push({path:'FootballSeasonCategory',query:{footballSeasonId:row.footballSeasonId}});
-		},
 		clearQueryParams: function () {
-			sessionStorage.removeItem("seasonLeagueMatchId");
+			sessionStorage.removeItem("categoryLeagueMatchId");
+			sessionStorage.removeItem("categoryFootballSeasonId");
 			this.filters.leagueMatchId = '';
+			this.filters.footballSeasonId = '';
 			this.filters.footballSeasonName = '';
+			this.filters.footballSeasonCategoryName = '';
 			this.findPage();
 		}
 	},
@@ -149,14 +148,26 @@ export default {
 	mounted() {
 		let leagueMatchId = this.$route.query.leagueMatchId;
 		if(isBlank(leagueMatchId)){
-			let seasonLeagueMatchId = sessionStorage.getItem("seasonLeagueMatchId");
-			if(!isBlank(seasonLeagueMatchId)){
-				this.filters.leagueMatchId = seasonLeagueMatchId;
+			let categoryLeagueMatchId = sessionStorage.getItem("categoryLeagueMatchId");
+			if(!isBlank(categoryLeagueMatchId)){
+				this.filters.leagueMatchId = categoryLeagueMatchId;
 			}
 		}else{
-			sessionStorage.setItem("seasonLeagueMatchId",leagueMatchId);
+			//如果路由传过来联赛Id,那么需要清除赛季的Id
+			sessionStorage.removeItem("categoryFootballSeasonId");
+			sessionStorage.setItem("categoryLeagueMatchId",leagueMatchId);
 			this.filters.leagueMatchId = leagueMatchId;
 		}
+		let footballSeasonId = this.$route.query.footballSeasonId;
+		if(isBlank(footballSeasonId)){
+			let categoryFootballSeasonId = sessionStorage.getItem("categoryFootballSeasonId");
+			if(!isBlank(categoryFootballSeasonId)){
+				this.filters.footballSeasonId = categoryFootballSeasonId;
+			}
+		}else{
+			sessionStorage.setItem("categoryFootballSeasonId",footballSeasonId);
+			this.filters.footballSeasonId = footballSeasonId;
+		}				
 		this.findPage();
 	}
 }

@@ -27,7 +27,8 @@
         "comfirm": "Comfirm",
         "cancel": "Cancel",
         "reset": "Reset",
-        "resetPass": "resetPass"
+        "resetPass": "resetPass",
+        "clearParams": "ClearParams"
     },
     "sys": {
         "sysMng": "SystemManage",
@@ -40,6 +41,13 @@
     },
     "crawler": {
         "seasonMng": "SeasonManage",
-        "playerMng": "PlayerManage"
+        "seasonCateMng": "SeasonCateManage",
+        "playerMng": "PlayerManage",
+        "changeCraw": "ChangeCrawlerOrManage",
+        "seasonCraw": "SeasonCrawler",
+        "seasonCateCraw": "CategoryCrawler",
+        "roundCraw": "RoundCrawler",
+        "scoreCraw": "ScoreCrawler",
+        "scoreDetailCraw": "DetailCrawler"        
     }
 }
