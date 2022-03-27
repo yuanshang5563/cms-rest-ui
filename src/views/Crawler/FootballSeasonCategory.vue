@@ -10,7 +10,7 @@
 				<el-input v-model="filters.footballSeasonCategoryName" placeholder="赛季类别名称"></el-input>
 			</el-form-item>						
 			<el-form-item>
-				<kt-button :label="$t('action.clearParams')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="clearQueryParams()"/>
+				<kt-button :label="$t('crawler.changeCraw')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="changeCrawlerOrManage()"/>
 				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
 		</el-form>
@@ -28,7 +28,14 @@
 	<el-table-column prop="roundCount" label="赛季类别总轮数"></el-table-column>
 	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
+		<div v-if="show">	
 		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_VIEW" :size="size" @click="handleView(scope.row)" />
+		<kt-button :label="$t('crawler.scoreMng')" perms="ROLE_FOOTBALL_SCORE_LIST" :size="size" @click="handleScoreMan(scope.row)" />
+		</div>
+		<div v-if="!show">
+		<kt-button :label="$t('crawler.scoreCraw')" perms="ROLE_FOOTBALL_SCORE_CRAW_BY_SEASON_CATEGORY" :size="size" @click="startScoreCrawler(scope.row)" />
+		<kt-button :label="$t('crawler.scoreDetailCraw')" perms="ROLE_FOOTBALL_SCORE_DETAIL_CRAW_BY_SEASON_CATEGORY" :size="size" @click="startScoreDetailCrawler(scope.row)" />					
+		</div>
 		</template>
 	</el-table-column>
 	</el-table>
@@ -67,19 +74,22 @@
 <script>
 import KtButton from "@/views/Core/KtButton"
 import { isBlank } from "@/utils/stringUtil"
+import { isObjectValueEqual } from "@/utils/objectUtil"
+import { mapActions } from 'vuex'
 export default {
 	components:{
 		KtButton
 	},
 	data() {				
 		return {
+			show: true,//该列是否显示
 			labelWidth: '20%',
 			size: 'small',
 			filters: {
 				footballSeasonCategoryName: '',
 				footballSeasonId: '',
 				footballSeasonName :'',
-				leagueMatchId: ''
+				footballLeagueMatchId: ''
 			},
 			pageRequest: { pageNum: 1, pageSize: 10 },
 			total: 0,
@@ -102,18 +112,55 @@ export default {
 		}
 	},
 	methods: {
+		//将vuex中定义的方法映射过来
+		...mapActions(['setSeasonCategoryListDataAsyn','setSeasonCategoryQueryParamsAsyn','setSeasonCategoryShowAsyn']),
 		// 获取分页数据
-		findPage: function (data) {
+		findPage: function () {
 			this.loading = true;
 			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,footballSeasonName:this.filters.footballSeasonName,
 			footballSeasonId:this.filters.footballSeasonId,footballSeasonCategoryName:this.filters.footballSeasonCategoryName,
-			footballLeagueMatchId:this.filters.leagueMatchId};
+			footballLeagueMatchId:this.filters.footballLeagueMatchId};
+			let queryParams = this.$store.state.footballSeasonCategory.queryParams;
+			if(null == queryParams){
+				this.findPageCommon(param);
+			}else{
+				//如果查询参数不为空，并且相同就不重复发起查询
+				if(isObjectValueEqual(param,queryParams)){
+					this.loading = false;
+					this.pageResult = this.$store.state.footballSeasonCategory.pageResult;
+					this.total = this.$store.state.footballSeasonCategory.total;
+					this.show = this.$store.state.footballSeasonCategory.show;
+				}else{
+					this.findPageCommon(param);
+				}
+			}
+		},
+		initTableData: function () {
+			let queryParams = this.$store.state.footballSeasonCategory.queryParams;
+			if(null != queryParams){
+				this.pageResult = this.$store.state.footballSeasonCategory.pageResult;
+				this.total = this.$store.state.footballSeasonCategory.total;
+				//把参数也给设置上
+				this.initParams(queryParams);
+			}
+			this.show = this.$store.state.footballSeasonCategory.show;
+		},
+		initParams: function (queryParams) {
+			this.filters.footballSeasonName = queryParams.footballSeasonName;
+			this.filters.footballSeasonId = queryParams.footballSeasonId;
+			this.filters.footballSeasonCategoryName = queryParams.footballSeasonCategoryName;
+			this.filters.footballLeagueMatchId = queryParams.footballLeagueMatchId;
+		},
+		findPageCommon: function (param) {
 			this.$api.footballSeasonCategory.findPage(param).then((res) => {
 				this.loading = false;
 				this.pageResult = res.data.list;
 				this.total= res.data.total;
+				//将数据保存到vuex
+				this.setSeasonCategoryListDataAsyn(res);
+				this.setSeasonCategoryQueryParamsAsyn(param);
 			})
-		},
+		},		
 		// 选择切换
 		selectionChange: function (selections) {
 			this.selections = selections
@@ -133,42 +180,59 @@ export default {
 				Object.assign(_this.dataForm, res.data);
 			});	
 		},
-		clearQueryParams: function () {
-			sessionStorage.removeItem("categoryLeagueMatchId");
-			sessionStorage.removeItem("categoryFootballSeasonId");
-			this.filters.leagueMatchId = '';
-			this.filters.footballSeasonId = '';
-			this.filters.footballSeasonName = '';
-			this.filters.footballSeasonCategoryName = '';
-			this.findPage();
-		}
+		// 打开该比赛的数据列表
+		handleScoreMan: function (row) {
+			this.$router.push({path:'FootballScore',query:{footballSeasonCategoryId:row.footballSeasonCategoryId}});
+		},			
+		//切换列表的按钮
+		changeCrawlerOrManage: function () {
+			let showVal = this.show;
+			this.show = !showVal;
+			this.setSeasonCategoryShowAsyn(this.show);
+		},		
+		startScoreCrawler:function(row){
+			this.$api.footballSeasonCategory.handleScoreCrawler({footballSeasonCategoryId:row.footballSeasonCategoryId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},  
+		startScoreDetailCrawler:function(row){
+			this.$api.footballSeasonCategory.handleScoreDetailCrawler({footballSeasonCategoryId:row.footballSeasonCategoryId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},        
+		resCommonFun: function(res){
+			if(res.code == 500){
+				this.$message.error(res.msg);
+			}else{
+				this.$message({message: res.msg,type: 'success' });
+			}    
+		},
+		handleParams: function(){
+			let routerFlag = false;
+			let footballSeasonId = this.$route.query.footballSeasonId;
+			if(!isBlank(footballSeasonId)){
+				this.filters.footballSeasonId = footballSeasonId;
+				this.filters.footballLeagueMatchId = '';
+				routerFlag = true;
+			}
+			let leagueMatchId = this.$route.query.leagueMatchId;
+			if(!isBlank(leagueMatchId)){
+				//如果路由传过来联赛Id,那么需要清除赛季的Id
+				this.filters.footballLeagueMatchId = leagueMatchId;
+				this.filters.footballSeasonId = '';
+				routerFlag = true;
+			}
+			if(routerFlag){
+				this.findPage();
+			}else{
+				this.initTableData();
+			}
+		}		
 	},
 	computed: {
 	},	
 	mounted() {
-		let leagueMatchId = this.$route.query.leagueMatchId;
-		if(isBlank(leagueMatchId)){
-			let categoryLeagueMatchId = sessionStorage.getItem("categoryLeagueMatchId");
-			if(!isBlank(categoryLeagueMatchId)){
-				this.filters.leagueMatchId = categoryLeagueMatchId;
-			}
-		}else{
-			//如果路由传过来联赛Id,那么需要清除赛季的Id
-			sessionStorage.removeItem("categoryFootballSeasonId");
-			sessionStorage.setItem("categoryLeagueMatchId",leagueMatchId);
-			this.filters.leagueMatchId = leagueMatchId;
-		}
-		let footballSeasonId = this.$route.query.footballSeasonId;
-		if(isBlank(footballSeasonId)){
-			let categoryFootballSeasonId = sessionStorage.getItem("categoryFootballSeasonId");
-			if(!isBlank(categoryFootballSeasonId)){
-				this.filters.footballSeasonId = categoryFootballSeasonId;
-			}
-		}else{
-			sessionStorage.setItem("categoryFootballSeasonId",footballSeasonId);
-			this.filters.footballSeasonId = footballSeasonId;
-		}				
-		this.findPage();
+		this.handleParams();
 	}
 }
 </script>

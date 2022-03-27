@@ -9,6 +9,13 @@ import user from './modules/user';
 import menu from './modules/menu';
 import dict from './modules/dict';
 import tab from './modules/tab';
+import footballLeagueMatch from './modules/crawler/footballLeagueMatch';
+import footballSeason from './modules/crawler/footballSeason';
+import footballSeasonCategory from './modules/crawler/footballSeasonCategory';
+import footballScore from './modules/crawler/footballScore';
+import footballScoreDetail from './modules/crawler/footballScoreDetail';
+import footballPlayer from './modules/crawler/footballPlayer';
+import footballTeam from './modules/crawler/footballTeam';
 
 const store = new vuex.Store({
     modules: {
@@ -17,7 +24,15 @@ const store = new vuex.Store({
         iframe: iframe,
         user: user,
         menu: menu,
-        dict: dict
+        dict: dict,
+        footballLeagueMatch,
+        footballSeason,
+        footballSeasonCategory,
+        footballScore,
+        footballScoreDetail,
+        footballPlayer,
+        footballSeason,
+        footballTeam
     }
 })
 

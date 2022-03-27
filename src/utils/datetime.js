@@ -58,3 +58,30 @@ export function formatDateWithSeperator (datetime, dateSeprator) {
     return timeFormat;
   }
 }
+
+/**
+ * 时间格式化
+ * 将 2018-09-23T11:54:16.000+0000 格式化成类似 11:54:16
+ * 可以指定日期和时间分隔符
+ * @param time 国际化日期格式
+ */
+ export function formatTime (time) {
+  return formatTimeWithSeperator(time, ":");
+}
+
+/**
+ * 时间格式化
+ * 将 2018-09-23T11:54:16.000+0000 格式化成类似 11:54:16
+ * 可以指定日期和时间分隔符
+ * @param time 国际化日期格式
+ */
+ export function formatTimeWithSeperator (time, dateSeprator) {
+  if (time != null) {
+    const dateMat = new Date(time);
+    const hh = dateMat.getHours();
+    const mm = dateMat.getMinutes();
+    const ss = dateMat.getSeconds();
+    const timeFormat = hh + dateSeprator + mm + dateSeprator + ss ;
+    return timeFormat;
+  }
+}

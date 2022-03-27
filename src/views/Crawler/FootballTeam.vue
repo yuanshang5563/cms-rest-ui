@@ -61,6 +61,8 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
+import { isObjectValueEqual } from "@/utils/objectUtil"
+import { mapActions } from 'vuex'
 export default {
 	components:{
 		KtButton
@@ -91,17 +93,51 @@ export default {
 		}
 	},
 	methods: {
+		//将vuex中定义的方法映射过来
+		...mapActions(['setTeamListDataAsyn','setTeamQueryParamsAsyn']),
 		// 获取分页数据
-		findPage: function (data) {
+		findPage: function () {
 			this.loading = true;
 			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,teamName:this.filters.teamName,
 			country:this.filters.country};
+			let queryParams = this.$store.state.footballTeam.queryParams;
+			if(null == queryParams){
+				this.findPageCommon(param);
+			}else{
+				//如果查询参数不为空，并且相同就不重复发起查询
+				if(isObjectValueEqual(param,queryParams)){
+					this.loading = false;
+					this.pageResult = this.$store.state.footballTeam.pageResult;
+					this.total = this.$store.state.footballTeam.total;
+					this.show = this.$store.state.footballTeam.show;
+				}else{
+					this.findPageCommon(param);
+				}
+			}
+		},
+		initTableData: function () {
+			let queryParams = this.$store.state.footballTeam.queryParams;
+			if(null != queryParams){
+				this.pageResult = this.$store.state.footballTeam.pageResult;
+				this.total = this.$store.state.footballTeam.total;
+				//把参数也给设置上
+				this.initParams(queryParams);
+			}
+		},
+		initParams: function (queryParams) {
+			this.filters.teamName = queryParams.teamName;
+			this.filters.country = queryParams.country;
+		},
+		findPageCommon: function (param) {
 			this.$api.footballTeam.findPage(param).then((res) => {
 				this.loading = false;
 				this.pageResult = res.data.list;
 				this.total= res.data.total;
+				//将数据保存到vuex
+				this.setTeamListDataAsyn(res);
+				this.setTeamQueryParamsAsyn(param);
 			})
-		},
+		},	
 		// 选择切换
 		selectionChange: function (selections) {
 			this.selections = selections
@@ -129,7 +165,7 @@ export default {
 	computed: {
 	},	
 	mounted() {
-		this.findPage();
+		//this.findPage();
 	}
 }
 </script>

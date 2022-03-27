@@ -434,23 +434,23 @@ export default {
         	this.filters.deptName = data.deptName
 		},
 		// 时间格式化
-      	dateFormat: function (row, column, cellValue, index){
-          	return format(row[column.property])
-      	},
+		dateFormat: function (row, column, cellValue, index){
+			return format(row[column.property])
+		},
 		// 时间格式化
-      	birthdayFormat: function (row, column, cellValue, index){
-          	return formatDate(row[column.property])
-      	},
+		birthdayFormat: function (row, column, cellValue, index){
+     		return formatDate(row[column.property])
+		},
 		// 性别格式化
-      	sexFormat: function (row, column, cellValue, index){
+		sexFormat: function (row, column, cellValue, index){
 			let sexList = this.$store.state.dict.sex;
-          	return formatSex(row,sexList);
-      	},
+			return formatSex(row,sexList);
+		},
 		// 状态格式化
-      	statusFormat: function (row, column, cellValue, index){
+		statusFormat: function (row, column, cellValue, index){
 			let statusList = this.$store.state.dict.coreUserStatus;
-          	return formatCoreUserStatus(row,statusList);
-      	}
+			return formatCoreUserStatus(row,statusList);
+		}
 	},
 	computed: {
 		...mapState({

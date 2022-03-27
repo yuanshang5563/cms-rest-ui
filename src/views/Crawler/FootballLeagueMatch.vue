@@ -33,6 +33,7 @@
 		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_VIEW" :size="size" @click="handleView(scope.row)" />
 		<kt-button :label="$t('crawler.seasonMng')" perms="ROLE_FOOTBALL_SEASON_LIST" :size="size" @click="handleSeasonMan(scope.row)" />
 		<kt-button :label="$t('crawler.seasonCateMng')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" :size="size" @click="handleSeasonCateMan(scope.row)" />
+		<kt-button :label="$t('crawler.scoreMng')" perms="ROLE_FOOTBALL_SCORE_LIST" :size="size" @click="handleScoreMan(scope.row)" />
 		</div>
 		<div v-if="!show">
 		<kt-button :label="$t('crawler.seasonCraw')" perms="ROLE_FOOTBALL_SEASON_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startSeasonCrawler(scope.row)" />
@@ -75,7 +76,8 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
-
+import { isObjectValueEqual } from "@/utils/objectUtil"
+import { mapActions } from 'vuex'
 export default {
 	components:{
 		KtButton
@@ -107,15 +109,50 @@ export default {
 		}
 	},
 	methods: {
+		//将vuex中定义的方法映射过来
+		...mapActions(['setLeagueMatchListDataAsyn','setLeagueMatchQueryParamsAsyn','setLeagueMatchShowAsyn']),
 		// 获取分页数据
-		findPage: function (data) {
+		findPage: function () {
 			this.loading = true;
 			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,footballLeagueMatchName:this.filters.footballLeagueMatchName,
 			regionName:this.filters.regionName};
+			let queryParams = this.$store.state.footballLeagueMatch.queryParams;
+			if(null == queryParams){
+				this.findPageCommon(param);
+			}else{
+				//如果查询参数不为空，并且相同就不重复发起查询
+				if(isObjectValueEqual(param,queryParams)){
+					this.loading = false;
+					this.pageResult = this.$store.state.footballLeagueMatch.pageResult;
+					this.total = this.$store.state.footballLeagueMatch.total;
+					this.show = this.$store.state.footballLeagueMatch.show;
+				}else{
+					this.findPageCommon(param);
+				}
+			}
+		},
+		initTableData: function () {
+			let queryParams = this.$store.state.footballLeagueMatch.queryParams;
+			if(null != queryParams){
+				this.pageResult = this.$store.state.footballLeagueMatch.pageResult;
+				this.total = this.$store.state.footballLeagueMatch.total;
+				//把参数也给设置上
+				this.initParams(queryParams);
+			}
+			this.show = this.$store.state.footballLeagueMatch.show;
+		},
+		initParams: function (queryParams) {
+			this.filters.footballLeagueMatchName = queryParams.footballLeagueMatchName;
+			this.filters.regionName = queryParams.regionName;
+		},
+		findPageCommon: function (param) {
 			this.$api.footballLeagueMatch.findPage(param).then((res) => {
 				this.loading = false;
 				this.pageResult = res.data.list;
 				this.total= res.data.total;
+				//将数据保存到vuex
+				this.setLeagueMatchListDataAsyn(res);
+				this.setLeagueMatchQueryParamsAsyn(param);
 			})
 		},
 		// 选择切换
@@ -146,23 +183,28 @@ export default {
 		handleSeasonCateMan: function (row) {
 			this.$router.push({path:'FootballSeasonCategory',query:{leagueMatchId:row.footballLeagueMatchId}});
 		},
+		// 打开该比赛的数据列表
+		handleScoreMan: function (row) {
+			this.$router.push({path:'FootballScore',query:{leagueMatchId:row.footballLeagueMatchId}});
+		},	
 		//切换列表的按钮
 		changeCrawlerOrManage: function () {
 			let showVal = this.show;
 			this.show = !showVal;
+			this.setLeagueMatchShowAsyn(this.show);
 		},
 		startSeasonCrawler:function(row){
-				this.$api.footballLeagueMatch.handleSeasonCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+			this.$api.footballLeagueMatch.handleSeasonCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
 				this.resCommonFun(res);
 			});
 		},
 		startSeasonCategoryCrawler:function(row){
-				this.$api.footballLeagueMatch.handleSeasonCategoryCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+			this.$api.footballLeagueMatch.handleSeasonCategoryCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
 				this.resCommonFun(res);
 			});
 		},  
 		startSeasonRoundCrawler:function(row){
-				this.$api.footballLeagueMatch.handleSeasonRoundCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+			this.$api.footballLeagueMatch.handleSeasonRoundCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
 				this.resCommonFun(res);
 			});
 		},  
@@ -172,7 +214,7 @@ export default {
 			});
 		},  
 		startScoreDetailCrawler:function(row){
-				this.$api.footballLeagueMatch.handleScoreDetailCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+			this.$api.footballLeagueMatch.handleScoreDetailCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
 				this.resCommonFun(res);
 			});
 		},        
@@ -187,7 +229,8 @@ export default {
 	computed: {
 	},	
 	mounted() {
-		this.findPage();
+		//this.findPage();
+		this.initTableData();
 	}
 }
 </script>

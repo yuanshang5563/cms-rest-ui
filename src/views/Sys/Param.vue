@@ -221,14 +221,14 @@ export default {
 			})
 		},
 		// 时间格式化
-      	dateFormat: function (row, column, cellValue, index){
-          	return format(row[column.property])
-      	},
+		dateFormat: function (row, column, cellValue, index){
+			return format(row[column.property])
+		},
 		// 参数类型格式化
-      	paramTypeFormat: function (row, column, cellValue, index){
+		paramTypeFormat: function (row, column, cellValue, index){
 			let paramTypeList = this.$store.state.dict.paramType;
-          	return formatParamType(row,paramTypeList);
-      	}
+			return formatParamType(row,paramTypeList);
+		}
 	},
 	computed: {
 		...mapState({

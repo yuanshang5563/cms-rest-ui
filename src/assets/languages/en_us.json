@@ -48,6 +48,8 @@
         "seasonCateCraw": "CategoryCrawler",
         "roundCraw": "RoundCrawler",
         "scoreCraw": "ScoreCrawler",
-        "scoreDetailCraw": "DetailCrawler"        
+        "scoreDetailCraw": "DetailCrawler",
+        "scoreMng": "ScoreManage",
+        "scoreDetailMng": "DetailManage"                
     }
 }

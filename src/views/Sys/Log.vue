@@ -63,9 +63,9 @@ export default {
 			}).then(data!=null?data.callback:'')
 		},
 		// 时间格式化
-      	dateFormat: function (row, column, cellValue, index){
-          	return format(row[column.property])
-      	}
+		dateFormat: function (row, column, cellValue, index){
+			return format(row[column.property])
+		}
 	},
 	mounted() {
 	}

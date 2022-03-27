@@ -18,7 +18,7 @@
     <el-table :data="tableTreeDdata" stripe size="mini" style="width: 100%;"
       v-loading="loading" :element-loading-text="$t('action.loading')">
       <el-table-column prop="coreMenuId" header-align="center" align="center" width="80" label="ID"></el-table-column>
-      <table-tree-column prop="menuName" header-align="center" treeKey="coreMenuId" parentKey="parentCoreMenuId" width="150" label="名称"></table-tree-column>
+      <table-tree-column prop="menuName" header-align="center" treeKey="coreMenuId" parentKey="parentCoreMenuId" width="250" label="名称"></table-tree-column>
       <el-table-column header-align="center" align="center" label="图标">
         <template slot-scope="scope">
           <i :class="scope.row.icon || ''"></i>

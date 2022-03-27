@@ -35,6 +35,10 @@
 export default {
   data () {
     return {
+      paramData: [{
+        paramName: '',
+
+      }]
     }
   },
   computed: {
@@ -68,19 +72,23 @@ export default {
       } else {
         this.$router.push("/")
       }
+      this.removeSessionItemByName(tabName);
     },
     // tabs, 关闭当前
     tabsCloseCurrentHandle () {
       this.removeTabHandle(this.mainTabsActiveName)
+      this.removeSessionItemByName(this.mainTabsActiveName);
     },
     // tabs, 关闭其它
     tabsCloseOtherHandle () {
-      this.mainTabs = this.mainTabs.filter(item => item.name === this.mainTabsActiveName)
+      this.mainTabs = this.mainTabs.filter(item => item.name === this.mainTabsActiveName);
+      this.removeSessionItemByName(this.mainTabsActiveName);
     },
     // tabs, 关闭全部
     tabsCloseAllHandle () {
       this.mainTabs = []
       this.$router.push("/")
+      this.removeSessionItemByName("");
     },
     // tabs, 刷新当前
     tabsRefreshCurrentHandle () {
@@ -89,7 +97,42 @@ export default {
       this.$nextTick(() => {
         this.$router.push({ name: tempTabName })
       })
-    }
+    },
+    removeSessionItemByName: function(tabName) {
+      //console.log("----------------- " + tabName);
+      switch (tabName) {
+        case "联赛和爬虫管理":
+          this.$store.dispatch("clearAllLeagueMatchAsyn");
+          break;        
+        case "赛季管理":
+          this.$store.dispatch("clearAllSeasonAsyn");
+          break;
+        case "类别管理":
+          this.$store.dispatch("clearAllSeasonCategoryAsyn");
+          break;
+        case "比分管理":
+          this.$store.dispatch("clearAllScoreAsyn");
+          break;
+        case "比分详情管理":
+          this.$store.dispatch("clearAllScoreDetailAsyn");
+          break;
+        case "球队管理":
+          this.$store.dispatch("clearAllTeamAsyn");
+          break;
+        case "球员管理":
+          this.$store.dispatch("clearAllPlayerAsyn");
+          break;          
+        default:
+          this.$store.dispatch("clearAllLeagueMatchAsyn");
+          this.$store.dispatch("clearAllSeasonAsyn");
+          this.$store.dispatch("clearAllSeasonCategoryAsyn");
+          this.$store.dispatch("clearAllScoreAsyn");
+          this.$store.dispatch("clearAllScoreDetailAsyn");
+          this.$store.dispatch("clearAllTeamAsyn");
+          this.$store.dispatch("clearAllPlayerAsyn");
+          break;
+      }
+    }    
   }
 }
 </script>

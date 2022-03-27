@@ -20,3 +20,19 @@ export const find = (params) => {
     })
 }
 
+//比分爬虫
+export const handleScoreCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballScoreController/startScoreCrawlerBySeason',
+        method: 'get',
+        params
+    })
+}
+//详情爬虫
+export const handleScoreDetailCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballScoreDetailController/startSeasonDetailCrawlerBySeason',
+        method: 'get',
+        params
+    })
+}
