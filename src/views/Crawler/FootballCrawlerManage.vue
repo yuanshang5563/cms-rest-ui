@@ -111,7 +111,7 @@ export default {
         });
     },
     startLeagueMatchCrawler: function () {
-      this.$api.footballCrawlerManage.handleLeagueMatchCrawler().then((res) => {
+        this.$api.footballCrawlerManage.handleLeagueMatchCrawler().then((res) => {
         this.resCommonFun(res);
       });
     },
@@ -121,9 +121,7 @@ export default {
       });
     },
     startSeasonCategoryCrawler: function () {
-      this.$api.footballCrawlerManage
-        .handleSeasonCategoryCrawler()
-        .then((res) => {
+        this.$api.footballCrawlerManage.handleSeasonCategoryCrawler().then((res) => {
           this.resCommonFun(res);
         });
     },

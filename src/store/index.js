@@ -16,6 +16,7 @@ import footballScore from './modules/crawler/footballScore';
 import footballScoreDetail from './modules/crawler/footballScoreDetail';
 import footballPlayer from './modules/crawler/footballPlayer';
 import footballTeam from './modules/crawler/footballTeam';
+import crawlerCascader from './modules/crawler/crawlerCascader';
 
 const store = new vuex.Store({
     modules: {
@@ -32,7 +33,8 @@ const store = new vuex.Store({
         footballScoreDetail,
         footballPlayer,
         footballSeason,
-        footballTeam
+        footballTeam,
+        crawlerCascader
     }
 })
 

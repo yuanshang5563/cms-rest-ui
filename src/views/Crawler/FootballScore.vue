@@ -1,14 +1,23 @@
 <template>
   <div class="page-container">
 	<!--工具栏-->
-	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
-		<el-form :inline="true" :model="filters" :size="size">	
+	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;width:1200px;">
+		<el-form :model="filters">
+			<el-col :span="7">		
+			<el-form-item>
+				<crawler-cascader :cascaderLevel="3" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+			</el-form-item>	
+			</el-col>
+			<el-col :span="3">			
 			<el-form-item>
 				<el-input v-model="filters.round" placeholder="轮数"></el-input>
-			</el-form-item>					
+			</el-form-item>
+			</el-col>
+			<el-col :span="2">						
 			<el-form-item>
 				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SCORE_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
+			</el-col>
 		</el-form>
 	</div>
 	<!--表格内容栏-->
@@ -90,18 +99,21 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
+import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
 import { isBlank } from "@/utils/stringUtil"
 import { formatDate } from "@/utils/datetime"
 import { isObjectValueEqual } from "@/utils/objectUtil"
 import { mapActions } from 'vuex'
 export default {
 	components:{
-		KtButton
+		KtButton,
+		CrawlerCascader
 	},
 	data() {				
 		return {
 			size: 'small',
 			filters: {
+				cascaderId: '',
 				round: '',
 				footballLeagueMatchId: '',
 				footballSeasonId: '',
@@ -148,7 +160,7 @@ export default {
 			this.loading = true;
 			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,round:this.filters.round,
 			footballLeagueMatchId:this.filters.footballLeagueMatchId,footballSeasonId:this.filters.footballSeasonId,
-			footballSeasonCategoryId:this.filters.footballSeasonCategoryId};
+			footballSeasonCategoryId:this.filters.footballSeasonCategoryId,cascaderId:this.filters.cascaderId};
 			let queryParams = this.$store.state.footballScore.queryParams;
 			if(null == queryParams){
 				this.findPageCommon(param);
@@ -192,7 +204,11 @@ export default {
 		// 选择切换
 		selectionChange: function (selections) {
 			this.selections = selections
-		},		
+		},	
+		// CASCADER选中
+      	filtersCascasderCurrentChangeHandle (data) {
+        	this.filters.cascaderId = data;
+		},			
 		// 换页刷新
 		refreshPageRequest: function (pageNum) {
 			this.pageRequest.pageNum = pageNum
@@ -259,5 +275,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

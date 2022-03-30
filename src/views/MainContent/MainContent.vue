@@ -130,6 +130,7 @@ export default {
           this.$store.dispatch("clearAllScoreDetailAsyn");
           this.$store.dispatch("clearAllTeamAsyn");
           this.$store.dispatch("clearAllPlayerAsyn");
+          this.$store.dispatch("clearAllCrawlerCascaderAsyn");
           break;
       }
     }    

@@ -4,6 +4,9 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
+				<crawler-cascader :cascaderLevel="1" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+			</el-form-item>			
+			<el-form-item>
 				<el-input v-model="filters.footballSeasonName" placeholder="赛季名称"></el-input>
 			</el-form-item>			
 			<el-form-item>
@@ -71,13 +74,15 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
+import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
 import { formatDate } from "@/utils/datetime"
 import { isBlank } from "@/utils/stringUtil"
 import { isObjectValueEqual } from "@/utils/objectUtil"
 import { mapActions } from 'vuex'
 export default {
 	components:{
-		KtButton
+		KtButton,
+		CrawlerCascader
 	},
 	data() {				
 		return {
@@ -85,6 +90,7 @@ export default {
 			labelWidth: '20%',
 			size: 'small',
 			filters: {
+				cascaderId: '',
 				footballSeasonName: '',
 				leagueMatchId: ''
 			},
@@ -115,7 +121,7 @@ export default {
 		findPage: function () {
 			this.loading = true;
 			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,footballSeasonName:this.filters.footballSeasonName,
-			leagueMatchId:this.filters.leagueMatchId};
+			leagueMatchId:this.filters.leagueMatchId,cascaderId:this.filters.cascaderId};
 			let queryParams = this.$store.state.footballSeason.queryParams;
 			if(null == queryParams){
 				this.findPageCommon(param);
@@ -158,7 +164,11 @@ export default {
 		// 选择切换
 		selectionChange: function (selections) {
 			this.selections = selections
-		},		
+		},	
+		// CASCADER选中
+      	filtersCascasderCurrentChangeHandle (data) {
+        	this.filters.cascaderId = data;
+		},			
 		// 换页刷新
 		refreshPageRequest: function (pageNum) {
 			this.pageRequest.pageNum = pageNum

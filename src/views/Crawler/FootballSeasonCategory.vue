@@ -1,18 +1,31 @@
 <template>
   <div class="page-container">
 	<!--工具栏-->
-	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
-		<el-form :inline="true" :model="filters" :size="size">
+	<div style="float:left;padding-top:10px;padding-left:15px;width:700px">
+		<el-form :model="filters">
+			<el-form-item>
+				<crawler-cascader :cascaderLevel="2" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+			</el-form-item>	
+			<el-col :span="7">		
 			<el-form-item>
 				<el-input v-model="filters.footballSeasonName" placeholder="赛季名称"></el-input>
-			</el-form-item>	
+			</el-form-item>
+			</el-col>
+			<el-col :span="7">	
 			<el-form-item>
 				<el-input v-model="filters.footballSeasonCategoryName" placeholder="赛季类别名称"></el-input>
-			</el-form-item>						
+			</el-form-item>
+			</el-col>
+			<el-col :span="5">	
 			<el-form-item>
 				<kt-button :label="$t('crawler.changeCraw')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="changeCrawlerOrManage()"/>
+			</el-form-item>
+			</el-col>
+			<el-col :span="2">
+			<el-form-item>
 				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="findPage()"/>
 			</el-form-item>
+			</el-col>
 		</el-form>
 	</div>
 	<!--表格内容栏-->
@@ -73,12 +86,14 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
+import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
 import { isBlank } from "@/utils/stringUtil"
 import { isObjectValueEqual } from "@/utils/objectUtil"
 import { mapActions } from 'vuex'
 export default {
 	components:{
-		KtButton
+		KtButton,
+		CrawlerCascader
 	},
 	data() {				
 		return {
@@ -86,6 +101,7 @@ export default {
 			labelWidth: '20%',
 			size: 'small',
 			filters: {
+				cascaderId: '',
 				footballSeasonCategoryName: '',
 				footballSeasonId: '',
 				footballSeasonName :'',
@@ -119,7 +135,7 @@ export default {
 			this.loading = true;
 			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,footballSeasonName:this.filters.footballSeasonName,
 			footballSeasonId:this.filters.footballSeasonId,footballSeasonCategoryName:this.filters.footballSeasonCategoryName,
-			footballLeagueMatchId:this.filters.footballLeagueMatchId};
+			footballLeagueMatchId:this.filters.footballLeagueMatchId,cascaderId:this.filters.cascaderId};
 			let queryParams = this.$store.state.footballSeasonCategory.queryParams;
 			if(null == queryParams){
 				this.findPageCommon(param);
@@ -189,7 +205,11 @@ export default {
 			let showVal = this.show;
 			this.show = !showVal;
 			this.setSeasonCategoryShowAsyn(this.show);
-		},		
+		},	
+		// CASCADER选中
+      	filtersCascasderCurrentChangeHandle (data) {
+        	this.filters.cascaderId = data;
+		},			
 		startScoreCrawler:function(row){
 			this.$api.footballSeasonCategory.handleScoreCrawler({footballSeasonCategoryId:row.footballSeasonCategoryId}).then(res => {
 				this.resCommonFun(res);
