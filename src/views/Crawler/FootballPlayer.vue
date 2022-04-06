@@ -117,7 +117,6 @@ export default {
 					this.loading = false;
 					this.pageResult = this.$store.state.footballPlayer.pageResult;
 					this.total = this.$store.state.footballPlayer.total;
-					this.show = this.$store.state.footballPlayer.show;
 				}else{
 					this.findPageCommon(param);
 				}

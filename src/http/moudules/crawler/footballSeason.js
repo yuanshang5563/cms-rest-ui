@@ -19,7 +19,13 @@ export const find = (params) => {
         params
     })
 }
-
+export const handleIntegralCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballIntegralController/startIntegralCrawlerBySeason',
+        method: 'get',
+        params
+    })
+}
 //比分爬虫
 export const handleScoreCrawler = (params) => {
     return axios({

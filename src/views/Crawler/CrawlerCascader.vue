@@ -76,9 +76,7 @@ export default {
             resolve(nodes);
           });
         }
-      }
-      // 第二級
-      if ((level == 1) && cascaderLevel >= 2) {
+      }else if ((level == 1) && cascaderLevel >= 2) { // 第二級
         // Ajax請求數據，填充選擇框，傳遞上一級參數
         let leagueMatchId = node.data.value;
         if(!isBlank(leagueMatchId)){
@@ -96,9 +94,7 @@ export default {
           }));
           resolve(nodes);
         });
-      }
-      // 第三級
-      if ((level == 2) && cascaderLevel >= 3) {
+      }else if ((level == 2) && cascaderLevel >= 3) {// 第三級
         // Ajax請求數據，填充選擇框，傳遞上一級參數
         let seasonId = node.data.value;
         if(!isBlank(seasonId)){

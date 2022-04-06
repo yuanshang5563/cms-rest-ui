@@ -47,9 +47,12 @@
         "seasonCraw": "SeasonCrawler",
         "seasonCateCraw": "CategoryCrawler",
         "roundCraw": "RoundCrawler",
+        "integralCraw": "IntegralCrawler",
         "scoreCraw": "ScoreCrawler",
         "scoreDetailCraw": "DetailCrawler",
         "scoreMng": "ScoreManage",
-        "scoreDetailMng": "DetailManage"                
+        "scoreDetailMng": "DetailManage",
+        "integralMng": "IntegralManage" ,
+        "teamMng": "TeamManage"              
     }
 }

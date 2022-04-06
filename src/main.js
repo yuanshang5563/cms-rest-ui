@@ -1,19 +1,22 @@
-import Vue from 'vue'
-import App from './App'
-import router from './router'
-import api from './http'
-import i18n from './i18n'
-import store from './store'
-import global from '@/utils/global'
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import 'font-awesome/css/font-awesome.min.css'
-import '@/assets/iconfont/iconfont.css'
+import Vue from 'vue';
+import App from './App';
+import router from './router';
+import api from './http';
+import i18n from './i18n';
+import store from './store';
+import global from '@/utils/global';
+import ElementUI from 'element-ui';
+import qs from "qs";
+import 'element-ui/lib/theme-chalk/index.css';
+import 'font-awesome/css/font-awesome.min.css';
+import '@/assets/iconfont/iconfont.css';
 
-Vue.use(ElementUI)
-Vue.use(api)
+Vue.use(ElementUI);
+Vue.use(api);
 
-Vue.prototype.global = global
+Vue.prototype.global = global;
+//配全局属性配置，在任意组件内可以使用this.$qs获取qs对象 
+Vue.prototype.$qs = qs;
 
 new Vue({
   el: '#app',

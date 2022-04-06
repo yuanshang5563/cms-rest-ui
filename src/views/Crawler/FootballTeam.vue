@@ -1,17 +1,30 @@
 <template>
   <div class="page-container">
 	<!--工具栏-->
-	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
-		<el-form :inline="true" :model="filters" :size="size">
-			<el-form-item>
-				<el-input v-model="filters.teamName" placeholder="球队名称"></el-input>
-			</el-form-item>		
-			<el-form-item>
-				<el-input v-model="filters.country" placeholder="所属国家"></el-input>
-			</el-form-item>					
-			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_TEAM_LIST" type="primary" @click="findPage()"/>
-			</el-form-item>
+	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;width:1400px;">
+		<el-form :model="filters" :size="size">
+			<el-row>
+				<el-col :span="8">		
+				<el-form-item>
+					<crawler-cascader :cascaderLevel="3" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+				</el-form-item>	
+				</el-col>	
+				<el-col :span="4">		
+				<el-form-item>
+					<el-input v-model="filters.teamName" placeholder="球队名称"></el-input>
+				</el-form-item>	
+				</el-col>
+				<el-col :span="4">	
+				<el-form-item>
+					<el-input v-model="filters.country" placeholder="所属国家"></el-input>
+				</el-form-item>	
+				</el-col>
+				<el-col :span="3">				
+				<el-form-item>
+					<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_TEAM_LIST" type="primary" @click="findPage()"/>
+				</el-form-item>
+				</el-col>
+			</el-row>
 		</el-form>
 	</div>
 	<!--表格内容栏-->
@@ -61,18 +74,25 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
+import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
+import { isBlank } from "@/utils/stringUtil"
 import { isObjectValueEqual } from "@/utils/objectUtil"
 import { mapActions } from 'vuex'
 export default {
 	components:{
-		KtButton
+		KtButton,
+		CrawlerCascader
 	},
 	data() {				
 		return {
 			size: 'small',
 			filters: {
 				teamName: '',
-				country: ''
+				country: '',
+				cascaderId: '',
+				footballLeagueMatchId: '',
+				footballSeasonId: '',
+				footballSeasonCategoryId: ''
 			},
 			pageRequest: { pageNum: 1, pageSize: 10 },
 			total: 0,
@@ -98,8 +118,10 @@ export default {
 		// 获取分页数据
 		findPage: function () {
 			this.loading = true;
-			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,teamName:this.filters.teamName,
-			country:this.filters.country};
+			let param = {pageNum:this.pageRequest.pageNum,pageSize:this.pageRequest.pageSize,
+			teamName:this.filters.teamName,country:this.filters.country,
+			footballLeagueMatchId:this.filters.footballLeagueMatchId,footballSeasonId:this.filters.footballSeasonId,
+			footballSeasonCategoryId:this.filters.footballSeasonCategoryId,cascaderId:this.filters.cascaderId};
 			let queryParams = this.$store.state.footballTeam.queryParams;
 			if(null == queryParams){
 				this.findPageCommon(param);
@@ -109,7 +131,6 @@ export default {
 					this.loading = false;
 					this.pageResult = this.$store.state.footballTeam.pageResult;
 					this.total = this.$store.state.footballTeam.total;
-					this.show = this.$store.state.footballTeam.show;
 				}else{
 					this.findPageCommon(param);
 				}
@@ -127,6 +148,9 @@ export default {
 		initParams: function (queryParams) {
 			this.filters.teamName = queryParams.teamName;
 			this.filters.country = queryParams.country;
+			this.filters.footballLeagueMatchId = queryParams.footballLeagueMatchId;
+			this.filters.footballSeasonId = queryParams.footballSeasonId;
+			this.filters.footballSeasonCategoryId = queryParams.footballSeasonCategoryId;
 		},
 		findPageCommon: function (param) {
 			this.$api.footballTeam.findPage(param).then((res) => {
@@ -141,7 +165,11 @@ export default {
 		// 选择切换
 		selectionChange: function (selections) {
 			this.selections = selections
-		},		
+		},	
+		// CASCADER选中
+      	filtersCascasderCurrentChangeHandle (data) {
+        	this.filters.cascaderId = data;
+		},				
 		// 换页刷新
 		refreshPageRequest: function (pageNum) {
 			this.pageRequest.pageNum = pageNum
@@ -160,12 +188,43 @@ export default {
 		// 打开该球队的球员管理界面
 		handlePlayerMan: function (row) {
 			this.$router.push({path:'FootballPlayer',query:{footballTeamId:row.footballTeamId}});
-		}
+		},
+		handleParams: function () {
+			let routerParamFalg = false;
+			//先看路由传过来没有，哪个最小的有用哪个
+			let footballSeasonCategoryId = this.$route.query.footballSeasonCategoryId;
+			if(!isBlank(footballSeasonCategoryId)){
+				//如果路由传过来联赛Id,那么需要清除赛季的Id
+				this.filters.footballLeagueMatchId = '';
+				this.filters.footballSeasonId = '';
+				this.filters.footballSeasonCategoryId = footballSeasonCategoryId;
+				routerParamFalg = true;
+			}
+			let footballSeasonId = this.$route.query.footballSeasonId;
+			if(!isBlank(footballSeasonId)){
+				this.filters.footballLeagueMatchId = '';
+				this.filters.footballSeasonCategoryId = '';
+				this.filters.footballSeasonId = footballSeasonId;
+				routerParamFalg = true;
+			}
+			let leagueMatchId = this.$route.query.leagueMatchId;
+			if(!isBlank(leagueMatchId)){
+				this.filters.footballSeasonCategoryId = '';
+				this.filters.footballSeasonId = '';
+				this.filters.footballLeagueMatchId = leagueMatchId;
+				routerParamFalg = true;
+			}
+			if(routerParamFalg){
+				this.findPage();
+			}else{
+				this.initTableData();
+			}
+		}		
 	},
 	computed: {
 	},	
 	mounted() {
-		//this.findPage();
+		this.handleParams();
 	}
 }
 </script>

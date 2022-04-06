@@ -1,4 +1,4 @@
-import axios from '../../axios'
+import axios from '../../axios';
 
 /* 
  * 联赛管理模块
@@ -9,7 +9,7 @@ export const findPage = (data) => {
         url: '/crawler/footballLeagueMatchController/findPage',
         method: 'post',
         data
-    })
+    });
 }
 // 查找用户
 export const find = (params) => {
@@ -40,6 +40,14 @@ export const handleSeasonCategoryCrawler = (params) => {
 export const handleSeasonRoundCrawler = (params) => {
     return axios({
         url: '/crawler/footballSeasonCategoryController/startSeasonRoundCrawlerByLeagueMatch',
+        method: 'get',
+        params
+    })
+}
+//积分爬虫
+export const handleIntegralCrawler = (params) => {
+    return axios({
+        url: '/crawler/footballIntegralController/startIntegralCrawlerByLeagueMatch',
         method: 'get',
         params
     })

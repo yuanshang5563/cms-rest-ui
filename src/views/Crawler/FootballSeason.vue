@@ -26,14 +26,17 @@
 	<el-table-column prop="footballSeasonUrl" label="赛季URL" width="220"></el-table-column>
 	<el-table-column prop="seasonBeginDate" label="赛季开始时间" :formatter="dateFormat"></el-table-column>
 	<el-table-column prop="seasonEndDate" label="赛季结束时间" :formatter="dateFormat"></el-table-column>
-	<el-table-column :label="$t('action.operation')" width="320" fixed="right" header-align="center" align="center">
+	<el-table-column :label="$t('action.operation')" width="500" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
 		<div v-if="show">
 		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_SEASON_VIEW" :size="size" @click="handleView(scope.row)" />
 		<kt-button :label="$t('crawler.seasonCateMng')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" :size="size" @click="handleSeasonCateMan(scope.row)" />
+		<kt-button :label="$t('crawler.integralMng')" perms="ROLE_FOOTBALL_INTEGRAL_LIST" :size="size" @click="handleIntegralMan(scope.row)" />
+		<kt-button :label="$t('crawler.teamMng')" perms="ROLE_FOOTBALL_TEAM_LIST" :size="size" @click="handleTeamMan(scope.row)" />
 		<kt-button :label="$t('crawler.scoreMng')" perms="ROLE_FOOTBALL_SCORE_LIST" :size="size" @click="handleScoreMan(scope.row)" />
 		</div>
 		<div v-if="!show">
+		<kt-button :label="$t('crawler.integralCraw')" perms="ROLE_FOOTBALL_INTEGRAL_CRAW_BY_SEASON" :size="size" @click="startIntegralCrawler(scope.row)" />
 		<kt-button :label="$t('crawler.scoreCraw')" perms="ROLE_FOOTBALL_SCORE_CRAW_BY_SEASON" :size="size" @click="startScoreCrawler(scope.row)" />
 		<kt-button :label="$t('crawler.scoreDetailCraw')" perms="ROLE_FOOTBALL_SCORE_DETAIL_CRAW_BY_SEASON" :size="size" @click="startScoreDetailCrawler(scope.row)" />			
 		</div>
@@ -76,7 +79,7 @@
 import KtButton from "@/views/Core/KtButton"
 import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
 import { formatDate } from "@/utils/datetime"
-import { isBlank } from "@/utils/stringUtil"
+import { isBlank,isContains } from "@/utils/stringUtil"
 import { isObjectValueEqual } from "@/utils/objectUtil"
 import { mapActions } from 'vuex'
 export default {
@@ -192,6 +195,19 @@ export default {
 		handleSeasonCateMan: function (row) {
 			this.$router.push({path:'FootballSeasonCategory',query:{footballSeasonId:row.footballSeasonId}});
 		},
+		// 打开该赛季的积分管理界面
+		handleIntegralMan: function (row) {
+			let leagueMatchName = row.footballLeagueMatchName;
+			if(isContains(leagueMatchName,"杯")){
+				this.$message({message: "杯赛没有积分数据",type: 'warning' });
+			}else{
+				this.$router.push({path:'FootballIntegral',query:{leagueMatchId:row.footballLeagueMatchId}});
+			}
+		},	
+		// 打开该联赛的球队管理界面
+		handleTeamMan: function (row) {
+			this.$router.push({path:'FootballTeam',query:{leagueMatchId:row.footballLeagueMatchId}});
+		},			
 		// 打开该比赛的数据列表
 		handleScoreMan: function (row) {
 			this.$router.push({path:'FootballScore',query:{footballSeasonId:row.footballSeasonId}});
@@ -202,6 +218,11 @@ export default {
 			this.show = !showVal;
 			this.setSeasonShowAsyn(this.show);
 		},		
+		startIntegralCrawler:function(row){
+			this.$api.footballSeason.handleIntegralCrawler({footballSeasonId:row.footballSeasonId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},  			
 		startScoreCrawler:function(row){
 			this.$api.footballSeason.handleScoreCrawler({footballSeasonId:row.footballSeasonId}).then(res => {
 				this.resCommonFun(res);

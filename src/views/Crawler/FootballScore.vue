@@ -3,21 +3,23 @@
 	<!--工具栏-->
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;width:1200px;">
 		<el-form :model="filters">
-			<el-col :span="7">		
-			<el-form-item>
-				<crawler-cascader :cascaderLevel="3" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
-			</el-form-item>	
-			</el-col>
-			<el-col :span="3">			
-			<el-form-item>
-				<el-input v-model="filters.round" placeholder="轮数"></el-input>
-			</el-form-item>
-			</el-col>
-			<el-col :span="2">						
-			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SCORE_LIST" type="primary" @click="findPage()"/>
-			</el-form-item>
-			</el-col>
+			<el-row>
+				<el-col :span="8">		
+				<el-form-item>
+					<crawler-cascader :cascaderLevel="3" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+				</el-form-item>	
+				</el-col>
+				<el-col :span="3">			
+				<el-form-item>
+					<el-input v-model="filters.round" placeholder="轮数"></el-input>
+				</el-form-item>
+				</el-col>
+				<el-col :span="3">						
+				<el-form-item>
+					<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SCORE_LIST" type="primary" @click="findPage()"/>
+				</el-form-item>
+				</el-col>
+			</el-row>
 		</el-form>
 	</div>
 	<!--表格内容栏-->

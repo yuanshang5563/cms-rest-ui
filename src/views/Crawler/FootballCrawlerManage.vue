@@ -60,16 +60,22 @@ export default {
           desc: "第四步，爬取所有赛季类别的轮数",
         },
         {
+          crawlerName: "积分爬虫",
+          handleMethod: "integralCrawler",
+          crawPerms: "ROLE_FOOTBALL_INTEGRAL_CRAW",
+          desc: "第五步，爬取所有赛季的积分数据",
+        },        
+        {
           crawlerName: "比分爬虫",
           handleMethod: "scoreCrawler",
           crawPerms: "ROLE_FOOTBALL_SCORE_CRAW",
-          desc: "第五步，爬取所有赛季的比分数据",
+          desc: "第六步，爬取所有赛季的比分数据",
         },
         {
           crawlerName: "详情爬虫",
           handleMethod: "scoreDetailCrawler",
           crawPerms: "ROLE_FOOTBALL_SCORE_DETAIL_CRAW",
-          desc: "第六步，爬取所有赛季的比分详情数据",
+          desc: "第七步，爬取所有赛季的比分详情数据",
         },
       ],
     };
@@ -99,6 +105,9 @@ export default {
             case "seasonRoundCrawler":
               this.startSeasonRoundCrawler();
               break;
+            case "integralCrawler":
+              this.startIntegralCrawler();
+              break;              
             case "scoreCrawler":
               this.startScoreCrawler();
               break;
@@ -130,6 +139,12 @@ export default {
         this.resCommonFun(res);
       });
     },
+    startIntegralCrawler: function () {
+      this.$api.footballCrawlerManage.handleIntegralCrawler().then((res) => {
+        //this.resCommonFun(res);
+      });
+      this.$message({ message: "爬虫已经在后台启动，请勿重复启动", type: "success" });
+    },   
     startScoreCrawler: function () {
       this.$api.footballCrawlerManage.handleScoreCrawler().then((res) => {
         this.resCommonFun(res);

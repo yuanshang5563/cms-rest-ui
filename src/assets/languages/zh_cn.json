@@ -47,9 +47,12 @@
         "seasonCraw": "赛季爬虫",
         "seasonCateCraw": "类别爬虫",
         "roundCraw": "轮数爬虫",
+        "integralCraw": "积分爬虫",
         "scoreCraw": "比分爬虫",
         "scoreDetailCraw": "详情爬虫",
         "scoreMng": "比分管理",
-        "scoreDetailMng": "详情管理"
+        "scoreDetailMng": "详情管理",
+        "integralMng": "积分管理",
+        "teamMng": "球队管理"
     }
 }

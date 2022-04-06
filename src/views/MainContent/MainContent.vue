@@ -121,7 +121,10 @@ export default {
           break;
         case "球员管理":
           this.$store.dispatch("clearAllPlayerAsyn");
-          break;          
+          break;    
+        case "积分管理":
+          this.$store.dispatch("clearAllIntegralAsyn");
+          break;                
         default:
           this.$store.dispatch("clearAllLeagueMatchAsyn");
           this.$store.dispatch("clearAllSeasonAsyn");
@@ -131,6 +134,7 @@ export default {
           this.$store.dispatch("clearAllTeamAsyn");
           this.$store.dispatch("clearAllPlayerAsyn");
           this.$store.dispatch("clearAllCrawlerCascaderAsyn");
+          this.$store.dispatch("clearAllIntegralAsyn");
           break;
       }
     }    

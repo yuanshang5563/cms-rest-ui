@@ -31,6 +31,13 @@ export const handleSeasonRoundCrawler = () => {
         method: 'get'
     })
 }
+//积分爬虫
+export const handleIntegralCrawler = () => {
+    return axios({
+        url: '/crawler/footballIntegralController/startIntegralCrawler',
+        method: 'get'
+    })
+}
 //比分爬虫
 export const handleScoreCrawler = () => {
     return axios({

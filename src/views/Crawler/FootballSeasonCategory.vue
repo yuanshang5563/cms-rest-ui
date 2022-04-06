@@ -1,31 +1,35 @@
 <template>
   <div class="page-container">
 	<!--工具栏-->
-	<div style="float:left;padding-top:10px;padding-left:15px;width:700px">
+	<div style="float:left;padding-top:10px;padding-left:15px;width:1200px">
 		<el-form :model="filters">
-			<el-form-item>
-				<crawler-cascader :cascaderLevel="2" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
-			</el-form-item>	
-			<el-col :span="7">		
-			<el-form-item>
-				<el-input v-model="filters.footballSeasonName" placeholder="赛季名称"></el-input>
-			</el-form-item>
-			</el-col>
-			<el-col :span="7">	
-			<el-form-item>
-				<el-input v-model="filters.footballSeasonCategoryName" placeholder="赛季类别名称"></el-input>
-			</el-form-item>
-			</el-col>
-			<el-col :span="5">	
-			<el-form-item>
-				<kt-button :label="$t('crawler.changeCraw')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="changeCrawlerOrManage()"/>
-			</el-form-item>
-			</el-col>
-			<el-col :span="2">
-			<el-form-item>
-				<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="findPage()"/>
-			</el-form-item>
-			</el-col>
+			<el-row>
+				<el-col :span="7">
+				<el-form-item>
+					<crawler-cascader :cascaderLevel="2" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+				</el-form-item>	
+				</el-col>
+				<el-col :span="4">		
+				<el-form-item>
+					<el-input v-model="filters.footballSeasonName" placeholder="赛季名称"></el-input>
+				</el-form-item>
+				</el-col>
+				<el-col :span="4">	
+				<el-form-item>
+					<el-input v-model="filters.footballSeasonCategoryName" placeholder="赛季类别名称"></el-input>
+				</el-form-item>
+				</el-col>
+				<el-col :span="3">	
+				<el-form-item>
+					<kt-button :label="$t('crawler.changeCraw')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="changeCrawlerOrManage()"/>
+				</el-form-item>
+				</el-col>
+				<el-col :span="2">
+				<el-form-item>
+					<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="findPage()"/>
+				</el-form-item>
+				</el-col>
+			</el-row>
 		</el-form>
 	</div>
 	<!--表格内容栏-->
@@ -43,6 +47,7 @@
 		<template slot-scope="scope">
 		<div v-if="show">	
 		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_VIEW" :size="size" @click="handleView(scope.row)" />
+		<kt-button :label="$t('crawler.teamMng')" perms="ROLE_FOOTBALL_TEAM_LIST" :size="size" @click="handleTeamMan(scope.row)" />
 		<kt-button :label="$t('crawler.scoreMng')" perms="ROLE_FOOTBALL_SCORE_LIST" :size="size" @click="handleScoreMan(scope.row)" />
 		</div>
 		<div v-if="!show">
@@ -196,6 +201,10 @@ export default {
 				Object.assign(_this.dataForm, res.data);
 			});	
 		},
+		// 打开该联赛的球队管理界面
+		handleTeamMan: function (row) {
+			this.$router.push({path:'FootballTeam',query:{leagueMatchId:row.footballLeagueMatchId}});
+		},			
 		// 打开该比赛的数据列表
 		handleScoreMan: function (row) {
 			this.$router.push({path:'FootballScore',query:{footballSeasonCategoryId:row.footballSeasonCategoryId}});

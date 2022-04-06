@@ -27,18 +27,21 @@
 	<el-table-column prop="regionName" label="联赛地区"></el-table-column>
 	<el-table-column prop="footballLeagueMatchLevel" label="联赛级别"></el-table-column>
 	<el-table-column prop="leagueMatchUrl" label="联赛URL" width="220"></el-table-column>
-	<el-table-column :label="$t('action.operation')" width="520" fixed="right" header-align="center" align="center">
+	<el-table-column :label="$t('action.operation')" width="600" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
 		<div v-if="show">
 		<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_VIEW" :size="size" @click="handleView(scope.row)" />
 		<kt-button :label="$t('crawler.seasonMng')" perms="ROLE_FOOTBALL_SEASON_LIST" :size="size" @click="handleSeasonMan(scope.row)" />
 		<kt-button :label="$t('crawler.seasonCateMng')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" :size="size" @click="handleSeasonCateMan(scope.row)" />
+		<kt-button :label="$t('crawler.integralMng')" perms="ROLE_FOOTBALL_INTEGRAL_LIST" :size="size" @click="handleIntegralMan(scope.row)" />
+		<kt-button :label="$t('crawler.teamMng')" perms="ROLE_FOOTBALL_TEAM_LIST" :size="size" @click="handleTeamMan(scope.row)" />
 		<kt-button :label="$t('crawler.scoreMng')" perms="ROLE_FOOTBALL_SCORE_LIST" :size="size" @click="handleScoreMan(scope.row)" />
 		</div>
 		<div v-if="!show">
 		<kt-button :label="$t('crawler.seasonCraw')" perms="ROLE_FOOTBALL_SEASON_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startSeasonCrawler(scope.row)" />
 		<kt-button :label="$t('crawler.seasonCateCraw')" perms="ROLE_FOOTBALL_SEASON_CATE_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startSeasonCategoryCrawler(scope.row)" />
 		<kt-button :label="$t('crawler.roundCraw')" perms="ROLE_FOOTBALL_SEASON_ROUND_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startSeasonRoundCrawler(scope.row)" />
+		<kt-button :label="$t('crawler.integralCraw')" perms="ROLE_FOOTBALL_INTEGRAL_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startIntegralCrawler(scope.row)" />
 		<kt-button :label="$t('crawler.scoreCraw')" perms="ROLE_FOOTBALL_SCORE_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startScoreCrawler(scope.row)" />
 		<kt-button :label="$t('crawler.scoreDetailCraw')" perms="ROLE_FOOTBALL_SCORE_DETAIL_CRAW_BY_LEAGUE_MATCH" :size="size" @click="startScoreDetailCrawler(scope.row)" />
 		</div>
@@ -77,6 +80,7 @@
 <script>
 import KtButton from "@/views/Core/KtButton"
 import { isObjectValueEqual } from "@/utils/objectUtil"
+import { isContains } from "@/utils/stringUtil"
 import { mapActions } from 'vuex'
 export default {
 	components:{
@@ -183,6 +187,19 @@ export default {
 		handleSeasonCateMan: function (row) {
 			this.$router.push({path:'FootballSeasonCategory',query:{leagueMatchId:row.footballLeagueMatchId}});
 		},
+		// 打开该联赛的积分管理界面
+		handleIntegralMan: function (row) {
+			let leagueMatchName = row.footballLeagueMatchName;
+			if(isContains(leagueMatchName,"杯")){
+				this.$message({message: "杯赛没有积分数据",type: 'warning' });
+			}else{
+				this.$router.push({path:'FootballIntegral',query:{leagueMatchId:row.footballLeagueMatchId}});
+			}
+		},	
+		// 打开该联赛的球队管理界面
+		handleTeamMan: function (row) {
+			this.$router.push({path:'FootballTeam',query:{leagueMatchId:row.footballLeagueMatchId}});
+		},			
 		// 打开该比赛的数据列表
 		handleScoreMan: function (row) {
 			this.$router.push({path:'FootballScore',query:{leagueMatchId:row.footballLeagueMatchId}});
@@ -208,6 +225,11 @@ export default {
 				this.resCommonFun(res);
 			});
 		},  
+		startIntegralCrawler:function(row){
+			this.$api.footballLeagueMatch.handleIntegralCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
+				this.resCommonFun(res);
+			});
+		},  		
 		startScoreCrawler:function(row){
 				this.$api.footballLeagueMatch.handleScoreCrawler({footballLeagueMatchId:row.footballLeagueMatchId}).then(res => {
 				this.resCommonFun(res);
@@ -220,9 +242,9 @@ export default {
 		},        
 		resCommonFun: function(res){
 			if(res.code == 500){
-			this.$message.error(res.msg);
+				this.$message.error(res.msg);
 			}else{
-			this.$message({message: res.msg,type: 'success' });
+				this.$message({message: res.msg,type: 'success' });
 			}    
 		}		
 	},

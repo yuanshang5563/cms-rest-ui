@@ -17,3 +17,13 @@ export function isBlank(data) {
     return false;
   }
 }
+
+/**
+ * 判断str是否包含substr
+ * @param {*} str 
+ * @param {*} substr 
+ * @returns 
+ */
+ export function isContains(str, substr) {
+  return str.indexOf(substr) >= 0;
+}
