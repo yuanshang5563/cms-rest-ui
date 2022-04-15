@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import vuex from 'vuex'
+import Vue from 'vue';
+import vuex from 'vuex';
 
 Vue.use(vuex);
 
-import app from './modules/app'
+import app from './modules/app';
 import iframe from './modules/iframe';
 import user from './modules/user';
 import menu from './modules/menu';
@@ -16,8 +16,10 @@ import footballScore from './modules/crawler/footballScore';
 import footballScoreDetail from './modules/crawler/footballScoreDetail';
 import footballPlayer from './modules/crawler/footballPlayer';
 import footballTeam from './modules/crawler/footballTeam';
-import crawlerCascader from './modules/crawler/crawlerCascader';
+import matchSeasonCategoryCascader from './modules/common/matchSeasonCategoryCascader';
 import footballIntegral from './modules/crawler/footballIntegral';
+import footballLeagueMatchAnalysis from './modules/analysis/footballLeagueMatchAnalysis';
+import footballSeasonCategoryAnalysis from './modules/analysis/footballSeasonCategoryAnalysis';
 
 const store = new vuex.Store({
     modules: {
@@ -35,9 +37,11 @@ const store = new vuex.Store({
         footballPlayer,
         footballSeason,
         footballTeam,
-        crawlerCascader,
-        footballIntegral
+        matchSeasonCategoryCascader,
+        footballIntegral,
+        footballLeagueMatchAnalysis,
+        footballSeasonCategoryAnalysis
     }
 })
 
-export default store
+export default store;

@@ -13,7 +13,7 @@ export default {
         setLeagueMatchList(state, res){ 
             state.leagueMatches = res.data;
         },
-        clearAllCrawlerCascader(state){ 
+        clearAllCommonMatchCascader(state){ 
             //将所有存储数据恢复到原样
             state.leagueMatches = null;
         }                   
@@ -23,8 +23,8 @@ export default {
         setLeagueMatchesAsyn(context, res){ 
             context.commit('setLeagueMatchList',res);
         },
-        clearAllCrawlerCascaderAsyn(context, show){ 
-            context.commit('clearAllCrawlerCascader',show);
+        clearAllCommonMatchCascaderAsyn(context, show){ 
+            context.commit('clearAllCommonMatchCascader',show);
         }                   
     }
 };

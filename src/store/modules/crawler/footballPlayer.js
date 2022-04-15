@@ -35,8 +35,8 @@ export default {
         setPlayerQueryParamsAsyn(context, params){ 
             context.commit('setPlayerQueryParams',params);
         },
-        clearAllPlayerAsyn(context, show){ 
-            context.commit('clearAllPlayer',show);
+        clearAllPlayerAsyn(context){ 
+            context.commit('clearAllPlayer');
         }                  
     }
 };

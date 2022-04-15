@@ -43,8 +43,8 @@ export default {
         setSeasonShowAsyn(context, show){ 
             context.commit('setSeasonShow',show);
         },
-        clearAllSeasonAsyn(context, show){ 
-            context.commit('clearAllSeason',show);
+        clearAllSeasonAsyn(context){ 
+            context.commit('clearAllSeason');
         }                  
     }
 };

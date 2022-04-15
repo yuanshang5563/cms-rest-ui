@@ -5,20 +5,20 @@
       <el-tabs class="tabs" :class="$store.state.app.collapse?'position-collapse-left':'position-left'"
         v-model="mainTabsActiveName" :closable="true" type="card"
         @tab-click="selectedTabHandle" @tab-remove="removeTabHandle">
-        <el-dropdown class="tabs-tools" :show-timeout="0" trigger="click">
-          <div style="font-size:20px;width:50px;"><i class="el-icon-arrow-down"></i></div>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="tabsCloseCurrentHandle">关闭当前标签</el-dropdown-item>
-            <el-dropdown-item @click.native="tabsCloseOtherHandle">关闭其它标签</el-dropdown-item>
-            <el-dropdown-item @click.native="tabsCloseAllHandle">关闭全部标签</el-dropdown-item>
-            <el-dropdown-item @click.native="tabsRefreshCurrentHandle">刷新当前标签</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
         <el-tab-pane v-for="item in mainTabs"
           :key="item.name" :label="item.title" :name="item.name">
-          <span slot="label"><i :class="item.icon"></i> {{item.title}} </span>
+          <span slot="label">{{item.title}} </span>
         </el-tab-pane>
       </el-tabs>
+      <el-dropdown class="tabs-tools" :show-timeout="0" trigger="click">
+        <div style="font-size:20px;width:50px;"><i class="el-icon-arrow-down"></i></div>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item @click.native="tabsCloseCurrentHandle">关闭当前标签</el-dropdown-item>
+          <el-dropdown-item @click.native="tabsCloseOtherHandle">关闭其它标签</el-dropdown-item>
+          <el-dropdown-item @click.native="tabsCloseAllHandle">关闭全部标签</el-dropdown-item>
+          <el-dropdown-item @click.native="tabsRefreshCurrentHandle">刷新当前标签</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>       
     </div>
     <!-- 主内容区域 -->
     <div class="main-content">
@@ -124,7 +124,13 @@ export default {
           break;    
         case "积分管理":
           this.$store.dispatch("clearAllIntegralAsyn");
-          break;                
+          break;  
+        case "联赛分析":
+          this.$store.dispatch("clearAllLeagueMatchAnalysisAsyn");
+          break; 
+         case "比分分析":
+          this.$store.dispatch("clearAllSeasonCategoryAnalysisAsyn");
+          break;                                  
         default:
           this.$store.dispatch("clearAllLeagueMatchAsyn");
           this.$store.dispatch("clearAllSeasonAsyn");
@@ -133,8 +139,10 @@ export default {
           this.$store.dispatch("clearAllScoreDetailAsyn");
           this.$store.dispatch("clearAllTeamAsyn");
           this.$store.dispatch("clearAllPlayerAsyn");
-          this.$store.dispatch("clearAllCrawlerCascaderAsyn");
+          this.$store.dispatch("clearAllCommonMatchCascaderAsyn");
           this.$store.dispatch("clearAllIntegralAsyn");
+          this.$store.dispatch("clearAllLeagueMatchAnalysisAsyn");
+          this.$store.dispatch("clearAllSeasonCategoryAnalysisAsyn");
           break;
       }
     }    
@@ -150,43 +158,55 @@ export default {
   left: 1px;
   right: 1px;
   bottom: 0px;
+  //border: 3px solid #bb88b7;
   // background: rgba(56, 5, 114, 0.5);
-  .tabs {
-    position: fixed;
-    top: 60px;
-    right: 50px;
-    padding-left: 0px;
-    padding-right: 2px;
-    z-index: 1020;
-    height: 40px;
-    line-height: 40px;
-    font-size: 14px;
-    background: rgb(255, 253, 255);
-    border-color: rgba(200, 206, 206, 0.5);
-    // border-left-width: 1px;
-    // border-left-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-  }
- .tabs-tools {
-    position: fixed;
-    top: 60px;
-    right: 0;
-    z-index: 1020;
-    height: 40px;
-    // padding: 0 10px;
-    font-size: 14px;
-    line-height: 40px;
-    cursor: pointer;
-    border-color: rgba(200, 206, 206, 0.5);
-    border-left-width: 1px;
-    border-left-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    background: rgba(255, 255, 255, 1);
-  }
-  .tabs-tools:hover {
-    background: rgba(200, 206, 206, 1);
+  .tab-container{
+    position: absolute;
+    top: 1px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    //border: 3px solid #052996;
+    .tabs {
+      position: absolute;
+      top: 1px;
+      right: 50px;
+      left: 0px;
+      padding-left: 0px;
+      padding-right: 2px;
+      z-index: 1020;
+      height: 40px;
+      line-height: 40px;
+      font-size: 14px;
+      //border: 3px solid #ad2121;
+      background: rgb(255, 253, 255);
+      border-color: rgba(200, 206, 206, 0.5);
+      // border-left-width: 1px;
+      // border-left-style: solid;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+    }   
+    .tabs-tools {
+      position: absolute;
+      top: 1px;
+      right: 0px;
+      z-index: 1030;
+      height: 40px;
+      // padding: 0 10px;
+      font-size: 14px;
+      line-height: 40px;
+      cursor: pointer;
+      border-color: rgba(200, 206, 206, 0.5);
+      border-left-width: 1px;
+      border-left-style: solid;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      //background: rgba(255, 255, 255, 1);
+      //border: 3px solid #73AD21;
+    }    
+    .tabs-tools:hover {
+      background: rgba(200, 206, 206, 1);
+    }      
   }
   .main-content {
     position: absolute;

@@ -35,8 +35,8 @@ export default {
         setScoreQueryParamsAsyn(context, params){ 
             context.commit('setScoreQueryParams',params);
         },
-        clearAllScoreAsyn(context, show){ 
-            context.commit('clearAllScore',show);
+        clearAllScoreAsyn(context){ 
+            context.commit('clearAllScore');
         }                  
     }
 };

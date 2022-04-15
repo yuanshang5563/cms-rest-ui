@@ -1,25 +1,28 @@
 <template>
   <div class="page-container">
 	<!--工具栏-->
-	<div style="float:left;padding-top:10px;padding-left:15px;width:1200px">
+	<div style="float:left;padding-top:10px;padding-left:15px;width:100%">
 		<el-form :model="filters">
 			<el-row>
 				<el-col :span="7">
 				<el-form-item>
-					<crawler-cascader :cascaderLevel="2" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+					<match-season-category-cascader :cascaderLevel="2" @toChangeSelection="filtersCascasderCurrentChangeHandle"></match-season-category-cascader>
 				</el-form-item>	
 				</el-col>
-				<el-col :span="4">		
+				<el-col :span="1">&nbsp;</el-col>
+				<el-col :span="5">		
 				<el-form-item>
 					<el-input v-model="filters.footballSeasonName" placeholder="赛季名称"></el-input>
 				</el-form-item>
 				</el-col>
-				<el-col :span="4">	
+				<el-col :span="1">&nbsp;</el-col>
+				<el-col :span="5">	
 				<el-form-item>
 					<el-input v-model="filters.footballSeasonCategoryName" placeholder="赛季类别名称"></el-input>
 				</el-form-item>
 				</el-col>
-				<el-col :span="3">	
+				<el-col :span="1">&nbsp;</el-col>
+				<el-col :span="2">	
 				<el-form-item>
 					<kt-button :label="$t('crawler.changeCraw')" perms="ROLE_FOOTBALL_SEASON_CATEGORY_LIST" type="primary" @click="changeCrawlerOrManage()"/>
 				</el-form-item>
@@ -91,14 +94,14 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
-import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
+import MatchSeasonCategoryCascader from "@/views/Common/MatchSeasonCategoryCascader"
 import { isBlank } from "@/utils/stringUtil"
 import { isObjectValueEqual } from "@/utils/objectUtil"
 import { mapActions } from 'vuex'
 export default {
 	components:{
 		KtButton,
-		CrawlerCascader
+		MatchSeasonCategoryCascader
 	},
 	data() {				
 		return {

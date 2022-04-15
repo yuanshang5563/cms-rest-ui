@@ -35,8 +35,8 @@ export default {
         setIntegralQueryParamsAsyn(context, params){ 
             context.commit('setIntegralQueryParams',params);
         },
-        clearAllIntegralAsyn(context, show){ 
-            context.commit('clearAllIntegral',show);
+        clearAllIntegralAsyn(context){ 
+            context.commit('clearAllIntegral');
         }                  
     }
 };

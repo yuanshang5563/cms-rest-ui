@@ -43,8 +43,8 @@ export default {
         setLeagueMatchShowAsyn(context, show){ 
             context.commit('setLeagueMatchShow',show);
         },
-        clearAllLeagueMatchAsyn(context, show){ 
-            context.commit('clearAllLeagueMatch',show);
+        clearAllLeagueMatchAsyn(context){ 
+            context.commit('clearAllLeagueMatch');
         }                  
     }
 };

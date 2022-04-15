@@ -7,7 +7,7 @@ import axios from '../../axios'
 // 获取联赛的级联数据
 export const findLeagueMatchCascaderItem = () => {
     return axios({
-        url: '/crawler/footballLeagueMatchController/findLeagueMatchCascaderItem',
+        url: '/common/footballCommonController/findLeagueMatchCascaderItem',
         method: 'get'
     })
 }
@@ -15,7 +15,7 @@ export const findLeagueMatchCascaderItem = () => {
 // 获取该联赛的赛季级联数据
 export const findSeasonCascaderItemByLeagueMatchId = (params) => {
     return axios({
-        url: '/crawler/footballSeasonController/findSeasonCascaderItemByLeagueMatchId',
+        url: '/common/footballCommonController/findSeasonCascaderItemByLeagueMatchId',
         method: 'get',
         params
     })
@@ -23,7 +23,7 @@ export const findSeasonCascaderItemByLeagueMatchId = (params) => {
 // 获取该赛季的赛季类别级联数据
 export const findSeasonCascaderItemBySeasonId = (params) => {
     return axios({
-        url: '/crawler/footballSeasonCategoryController/findSeasonCascaderItemBySeasonId',
+        url: '/common/footballCommonController/findSeasonCascaderItemBySeasonId',
         method: 'get',
         params
     })

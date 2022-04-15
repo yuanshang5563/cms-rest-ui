@@ -35,8 +35,8 @@ export default {
         setTeamQueryParamsAsyn(context, params){ 
             context.commit('setTeamQueryParams',params);
         },
-        clearAllTeamAsyn(context, show){ 
-            context.commit('clearAllTeam',show);
+        clearAllTeamAsyn(context){ 
+            context.commit('clearAllTeam');
         }                  
     }
 };

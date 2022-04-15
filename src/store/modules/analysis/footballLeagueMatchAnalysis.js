@@ -1,5 +1,5 @@
 /**
- * 保存比分详情管理相关数据
+ * 保存联赛分析管理相关数据
  */
 export default {
     state: {
@@ -11,18 +11,17 @@ export default {
    
     },
     mutations: {
-        //保存比分详情列表数据，避免重复查询
-        setScoreDetailListData(state, res){ 
+        //保存联赛列表数据，避免重复查询
+        setLeagueMatchAnalysisData(state, res){ 
             state.pageResult = res.data.list;
 			state.total= res.data.total;
         },
         //保存列表参数数据
-        setScoreDetailQueryParams(state, params){ 
+        setLeagueMatchAnalysisParams(state, params){ 
             state.queryParams = params;
         },
-        clearAllScoreDetail(state){ 
+        clearAllLeagueMatchAnalysis(state){ 
             //将所有存储数据恢复到原样
-            state.show = true;
             state.total = 0;
             state.pageResult = [];
             state.queryParams = null;
@@ -30,14 +29,14 @@ export default {
     },
     actions: {
         //异步更改数据
-        setScoreDetailListDataAsyn(context, res){ 
-            context.commit('setScoreDetailListData',res);
+        setLeagueMatchAnalysisDataAsyn(context, res){ 
+            context.commit('setLeagueMatchAnalysisData',res);
         },
-        setScoreDetailQueryParamsAsyn(context, params){ 
-            context.commit('setScoreDetailQueryParams',params);
+        setLeagueMatchAnalysisParamsAsyn(context, params){ 
+            context.commit('setLeagueMatchAnalysisParams',params);
         },
-        clearAllScoreDetailAsyn(context){ 
-            context.commit('clearAllScoreDetail');
+        clearAllLeagueMatchAnalysisAsyn(context){ 
+            context.commit('clearAllLeagueMatchAnalysis');
         }                  
     }
 };

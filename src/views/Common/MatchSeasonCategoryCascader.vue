@@ -1,12 +1,12 @@
 <template>
-  <el-cascader ref="crawlerCascader" :clearable="clearable" :filterable="filterable" :props="props" :placeholder="placeholder"  @change="handleChange" style="width:100%"></el-cascader>
+  <el-cascader ref="matchSeasonCategoryCascader" :clearable="clearable" :filterable="filterable" :props="props" :placeholder="placeholder"  @change="handleChange" style="width:100%"></el-cascader>
 </template>
 
 <script>
 import { isBlank } from "@/utils/stringUtil"
 import { mapActions } from 'vuex'
 export default {
-  name: 'CrawlerCascader',
+  name: 'MatchSeasonCategoryCascader',
   props:{
     placeholder: {
       type: String,
@@ -52,7 +52,7 @@ export default {
       let cascaderLevel = this.cascaderLevel;
       // 第一級
       if (level == 0) {
-        let leagueMatches = this.$store.state.crawlerCascader.leagueMatches;
+        let leagueMatches = this.$store.state.matchSeasonCategoryCascader.leagueMatches;
         let leafVal = node.level >= 2
         if (cascaderLevel == 1) {
           leafVal = "leaf";
@@ -66,7 +66,7 @@ export default {
             resolve(nodes);
         }else{
           // Ajax請求數據，填充選擇框
-          this.$api.crawlerCascader.findLeagueMatchCascaderItem().then(response => {
+          this.$api.matchSeasonCategoryCascader.findLeagueMatchCascaderItem().then(response => {
             const nodes = response.data.map((item, index) => ({
               value: "footballLeagueMatchId:"+item.id,
               label: item.name,
@@ -86,7 +86,7 @@ export default {
         if (cascaderLevel == 2) {
           leafVal = "leaf";
         }
-        this.$api.crawlerCascader.findSeasonCascaderItemByLeagueMatchId({footballLeagueMatchId: leagueMatchId}).then(response => {
+        this.$api.matchSeasonCategoryCascader.findSeasonCascaderItemByLeagueMatchId({footballLeagueMatchId: leagueMatchId}).then(response => {
           const nodes = response.data.map((item, index) => ({
             value: "footballSeasonId:"+item.id,
             label: item.name,
@@ -100,7 +100,7 @@ export default {
         if(!isBlank(seasonId)){
           seasonId = seasonId.replace("footballSeasonId:","")
         }
-        this.$api.crawlerCascader.findSeasonCascaderItemBySeasonId({footballSeasonId: seasonId}).then(response => {
+        this.$api.matchSeasonCategoryCascader.findSeasonCascaderItemBySeasonId({footballSeasonId: seasonId}).then(response => {
           const nodes = response.data.map((item, index) => ({
             value: "footballSeasonCategoryId:"+item.id,
             label: item.name,

@@ -4,17 +4,18 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;width:1200px;">
 		<el-form :model="filters">
 			<el-row>
-				<el-col :span="8">		
+				<el-col :span="11">		
 				<el-form-item>
-					<crawler-cascader :cascaderLevel="3" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+					<match-season-category-cascader :cascaderLevel="3" @toChangeSelection="filtersCascasderCurrentChangeHandle"></match-season-category-cascader>
 				</el-form-item>	
 				</el-col>
-				<el-col :span="3">			
+				<el-col :span="1">&nbsp;</el-col>
+				<el-col :span="6">			
 				<el-form-item>
 					<el-input v-model="filters.round" placeholder="轮数"></el-input>
 				</el-form-item>
 				</el-col>
-				<el-col :span="3">						
+				<el-col :span="6">						
 				<el-form-item>
 					<kt-button :label="$t('action.search')" perms="ROLE_FOOTBALL_SCORE_LIST" type="primary" @click="findPage()"/>
 				</el-form-item>
@@ -101,7 +102,7 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
-import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
+import MatchSeasonCategoryCascader from "@/views/Common/MatchSeasonCategoryCascader"
 import { isBlank } from "@/utils/stringUtil"
 import { formatDate } from "@/utils/datetime"
 import { isObjectValueEqual } from "@/utils/objectUtil"
@@ -109,7 +110,7 @@ import { mapActions } from 'vuex'
 export default {
 	components:{
 		KtButton,
-		CrawlerCascader
+		MatchSeasonCategoryCascader
 	},
 	data() {				
 		return {

@@ -62,11 +62,10 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }
+        ],
+        captcha: [
+          { required: true, message: '请输入验证码', trigger: 'blur' }
         ]
-        // ,
-        // captcha: [
-        //   { required: true, message: '请输入验证码', trigger: 'blur' }
-        // ]
       },
       checked: true
     }
@@ -97,7 +96,9 @@ export default {
         })
         this.loading = false;
       });
-      this.refreshCaptcha();
+      if(!(this.loading)){
+        this.refreshCaptcha();
+      }
     },
     refreshCaptcha: function(){
       this.loginForm.src = this.global.baseUrl + "/captcha.jpg?t=" + new Date().getTime();
@@ -111,7 +112,7 @@ export default {
     }
   },
   mounted() {
-    this.refreshCaptcha()
+    this.refreshCaptcha();
   },
   computed:{
     ...mapState({

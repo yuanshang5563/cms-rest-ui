@@ -4,7 +4,7 @@
 	<div class="toolbar" style="float:left;padding-top:10px;padding-left:15px;">
 		<el-form :inline="true" :model="filters" :size="size">
 			<el-form-item>
-				<crawler-cascader :cascaderLevel="1" @toChangeSelection="filtersCascasderCurrentChangeHandle"></crawler-cascader>
+				<match-season-category-cascader :cascaderLevel="1" @toChangeSelection="filtersCascasderCurrentChangeHandle"></match-season-category-cascader>
 			</el-form-item>			
 			<el-form-item>
 				<el-input v-model="filters.footballSeasonName" placeholder="赛季名称"></el-input>
@@ -77,7 +77,7 @@
 
 <script>
 import KtButton from "@/views/Core/KtButton"
-import CrawlerCascader from "@/views/Crawler/CrawlerCascader"
+import MatchSeasonCategoryCascader from "@/views/Common/MatchSeasonCategoryCascader"
 import { formatDate } from "@/utils/datetime"
 import { isBlank,isContains } from "@/utils/stringUtil"
 import { isObjectValueEqual } from "@/utils/objectUtil"
@@ -85,7 +85,7 @@ import { mapActions } from 'vuex'
 export default {
 	components:{
 		KtButton,
-		CrawlerCascader
+		MatchSeasonCategoryCascader
 	},
 	data() {				
 		return {

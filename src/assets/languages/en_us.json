@@ -54,5 +54,8 @@
         "scoreDetailMng": "DetailManage",
         "integralMng": "IntegralManage" ,
         "teamMng": "TeamManage"              
+    },
+    "analysis": {
+        "analysis": "Analysis"
     }
 }

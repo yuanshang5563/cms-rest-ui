@@ -54,5 +54,8 @@
         "scoreDetailMng": "详情管理",
         "integralMng": "积分管理",
         "teamMng": "球队管理"
+    },
+    "analysis": {
+        "analysis": "分析"
     }
 }
