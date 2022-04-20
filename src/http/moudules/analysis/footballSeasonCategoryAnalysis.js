@@ -34,3 +34,11 @@ export const findScoreList = (data) => {
         data
     });
 }
+
+export const findIntegralList = (params) => {
+    return axios({
+        url: '/analysis/footballIntegralAnalysisController/findIntegralList',
+        method: 'get',
+        params
+    });
+}

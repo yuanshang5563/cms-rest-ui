@@ -5,6 +5,7 @@ export default {
     state: {
         leagueMatch: null,
         seasonCategory: null,
+        integralList: [],
         scoreList: [],  //列表数据
         scoreQueryParams: null, //分数查询参数map
         seasonList: [],
@@ -21,7 +22,10 @@ export default {
         },
         setSeasonCategoryAnalysisForSeasonCategory(state, category){ 
             state.seasonCategory = category;
-        },        
+        },     
+        setSeasonCategoryAnalysisForIntegrals(state, integralList){ 
+            state.integralList = integralList;
+        },                
         //保存类别分析分数列表数据，避免重复查询
         setSeasonCategoryAnalysisForSocre(state, res){ 
             state.scoreList = res.data;
@@ -51,6 +55,7 @@ export default {
             state.seasonQueryParams = null;
             state.seasonCategoryList = [];
             state.seasonCategoryQueryParams = null;
+            state.integralList = [];
         }                   
     },
     actions: {
@@ -60,7 +65,10 @@ export default {
         },
         setSeasonCategoryAnalysisForSeasonCategoryAsyn(context, seasonCategory){ 
             context.commit('setSeasonCategoryAnalysisForSeasonCategory',seasonCategory);
-        },        
+        }, 
+        setSeasonCategoryAnalysisForIntegralsAsyn(context, integralList){ 
+            context.commit('setSeasonCategoryAnalysisForIntegrals',integralList);
+        },                      
         setSeasonCategoryAnalysisForSocreAsyn(context, res){ 
             context.commit('setSeasonCategoryAnalysisForSocre',res);
         },

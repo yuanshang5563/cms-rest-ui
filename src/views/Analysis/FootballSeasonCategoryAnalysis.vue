@@ -54,12 +54,12 @@
 	<el-table-column prop="matchDate" label="时间" :formatter="dateFormat" align="center"></el-table-column>
 	<el-table-column prop="homeFootballTeamName" label="主队" align="center"></el-table-column>
 	<el-table-column label="比分" align="center">
-		<el-table-column prop="homeScore" align="center"></el-table-column>
-		<el-table-column prop="awayScore" align="center"></el-table-column>
+		<el-table-column prop="homeScore" label="主队" align="center"></el-table-column>
+		<el-table-column prop="awayScore" label="客队" align="center"></el-table-column>
 	</el-table-column>
 	<el-table-column label="半场比分" align="center">
-		<el-table-column prop="halfHomeScore" align="center"></el-table-column>
-		<el-table-column prop="halfAwayScore" align="center"></el-table-column>
+		<el-table-column prop="halfHomeScore" label="主队" align="center"></el-table-column>
+		<el-table-column prop="halfAwayScore" label="客队" align="center"></el-table-column>
 	</el-table-column>	
 	<el-table-column prop="awayFootballTeamName" label="客队" align="center"></el-table-column>
 
@@ -70,6 +70,44 @@
 	</el-table-column>
 	
 	</el-table>
+
+	<el-table :data="integralList" :highlight-current-row="true"
+		v-loading="integralLoading" :element-loading-text="$t('action.loading')" :border="false" :stripe="false"
+		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" v-if="integralList.length > 0">
+	<el-table-column type="index" :width="integralListWidth" label="序号" align="center"></el-table-column>
+	<el-table-column prop="teamName" label="球队" align="center"></el-table-column>
+	<el-table-column prop="playedTotal" label="总场次" align="center"></el-table-column>
+	<el-table-column prop="winTotal" :width="integralListWidth" label="胜" align="center"></el-table-column>
+	<el-table-column label="胜" align="center">
+		<el-table-column prop="winHome"  :width="integralListWidth" label="主" align="center"></el-table-column>
+		<el-table-column prop="winAway"  :width="integralListWidth" label="客" align="center"></el-table-column>
+	</el-table-column>
+	<el-table-column prop="drawTotal" :width="integralListWidth" label="平" align="center"></el-table-column>
+	<el-table-column label="平" align="center">
+		<el-table-column prop="drawHome" :width="integralListWidth" label="主" align="center"></el-table-column>
+		<el-table-column prop="drawAway" :width="integralListWidth" label="客" align="center"></el-table-column>
+	</el-table-column>
+	<el-table-column prop="lostTotal" :width="integralListWidth" label="负" align="center"></el-table-column>
+	<el-table-column label="负" align="center">
+		<el-table-column prop="lostHome" :width="integralListWidth" label="主" align="center"></el-table-column>
+		<el-table-column prop="lostAway" :width="integralListWidth" label="客" align="center"></el-table-column>
+	</el-table-column>
+	<el-table-column prop="goalTotal" :width="integralListWidth" label="进球" align="center"></el-table-column>
+	<el-table-column label="进球" align="center">
+		<el-table-column prop="goalHome" :width="integralListWidth" label="主场" align="center"></el-table-column>
+		<el-table-column prop="goalAway" :width="integralListWidth" label="客场" align="center"></el-table-column>
+	</el-table-column>
+	<el-table-column prop="fumbleTotal" :width="integralListWidth" label="失球" align="center"></el-table-column>
+	<el-table-column label="失球" align="center">
+		<el-table-column prop="fumbleHome" :width="integralListWidth" label="主场" align="center"></el-table-column>
+		<el-table-column prop="fumbleAway" :width="integralListWidth" label="客场" align="center"></el-table-column>
+	</el-table-column>
+	<el-table-column prop="differenceTotal" :width="integralListWidth" label="净胜球" align="center"></el-table-column>
+	<el-table-column prop="goalPerPlayed" label="场均进球" align="center"></el-table-column>
+	<el-table-column prop="fumblePerPlayed" label="场均失球" align="center"></el-table-column>
+	<el-table-column prop="winPerPlayed" label="场均净胜球" align="center"></el-table-column>
+	<el-table-column prop="integralTotal" label="积分" align="center"></el-table-column>
+	</el-table>	
   </div>
 </template>
 
@@ -97,15 +135,18 @@ export default {
 			seasonList: [],
 			seasonCategoryList: [],
 			scoreList: [],
+			integralList: [],
 			loading: false, //加载标志
-			lastRoundClickBtnId: ''
+			integralLoading: false,
+			lastRoundClickBtnId: '',
+			integralListWidth: 60,
 		}
 	},
 	methods: {
 		//将vuex中定义的方法映射过来
 		...mapActions(['setSeasonCategoryAnalysisForSocreAsyn','setSeasonCategoryAnalysisForSocreParamsAsyn','setSeasonCategoryAnalysisForSeasonAsyn',
 		'setSeasonCategoryAnalysisForSeasonParamsAsyn','setSeasonCategoryAnalysisForCategoryListAsyn','setSeasonCategoryAnalysisForCategoryListParamsAsyn',
-		'setSeasonCategoryAnalysisForLeagueMatchAsyn','setSeasonCategoryAnalysisForSeasonCategoryAsyn']),
+		'setSeasonCategoryAnalysisForLeagueMatchAsyn','setSeasonCategoryAnalysisForSeasonCategoryAsyn','setSeasonCategoryAnalysisForIntegralsAsyn']),
 		//第一步根据联赛找到赛季列表
 		findSeasonList: function (seasonParam) {
 			let seasonQueryParams = this.$store.state.footballSeasonCategoryAnalysis.seasonQueryParams;
@@ -172,6 +213,8 @@ export default {
 				this.filters.footballSeasonCategoryId = footballSeasonCategoryId;
 				let param = {footballSeasonCategoryId:this.filters.footballSeasonCategoryId,round:this.filters.round};
 				this.findScoreList(param);
+				let integralParam = {footballSeasonCategoryId:this.filters.footballSeasonCategoryId};
+				this.findIntegralList(integralParam);
 				this.setSeasonCategoryAnalysisForSeasonCategoryAsyn(category);
 			}
 		},		
@@ -200,6 +243,29 @@ export default {
 				this.setSeasonCategoryAnalysisForSocreParamsAsyn(param);
 			})
 		},		
+		findIntegralList: function (param) {
+			this.integralLoading = true;
+			let seasonCategoryQueryParams = this.$store.state.footballSeasonCategoryAnalysis.seasonCategoryQueryParams;
+			if(null == seasonCategoryQueryParams){
+				this.findIntegralListCommon(param);
+			}else{
+				//如果查询参数不为空，并且相同就不重复发起查询
+				if(isObjectValueEqual(param,seasonCategoryQueryParams)){
+					this.integralLoading = false;
+					this.integralList = this.$store.state.footballSeasonCategoryAnalysis.integralList;
+				}else{
+					this.findIntegralListCommon(param);
+				}
+			}
+		},	
+		findIntegralListCommon: function (param) {
+			this.$api.footballSeasonCategoryAnalysis.findIntegralList(param).then((res) => {
+				this.integralLoading = false;
+				this.integralList = res.data;
+				//将数据保存到vuex
+				this.setSeasonCategoryAnalysisForIntegralsAsyn(res.data);
+			})
+		},		
 		initTableData: function () {
 			let scoreQueryParams = this.$store.state.footballSeasonCategoryAnalysis.scoreQueryParams;
 			if(null != scoreQueryParams){
@@ -208,6 +274,7 @@ export default {
 				this.seasonList = this.$store.state.footballSeasonCategoryAnalysis.seasonList;
 				this.seasonCategoryList = this.$store.state.footballSeasonCategoryAnalysis.seasonCategoryList;
 				this.scoreList = this.$store.state.footballSeasonCategoryAnalysis.scoreList;
+				this.integralList = this.$store.state.footballSeasonCategoryAnalysis.integralList;
 				//把参数也给设置上
 				this.initParams();
 			}
