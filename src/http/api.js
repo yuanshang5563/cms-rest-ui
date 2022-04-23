@@ -22,6 +22,7 @@ import * as matchSeasonCategoryCascader from './moudules/common/matchSeasonCateg
 import * as footballIntegral from './moudules/crawler/footballIntegral';
 import * as footballLeagueMatchAnalysis from './moudules/analysis/footballLeagueMatchAnalysis';
 import * as footballSeasonCategoryAnalysis from './moudules/analysis/footballSeasonCategoryAnalysis';
+import * as footballScoreAnalysis from './moudules/analysis/footballScoreAnalysis';
 
 
 // 默认全部导出
@@ -46,5 +47,6 @@ export default {
     matchSeasonCategoryCascader,
     footballIntegral,
     footballLeagueMatchAnalysis,
-    footballSeasonCategoryAnalysis
+    footballSeasonCategoryAnalysis,
+    footballScoreAnalysis
 }

@@ -20,6 +20,7 @@ import matchSeasonCategoryCascader from './modules/common/matchSeasonCategoryCas
 import footballIntegral from './modules/crawler/footballIntegral';
 import footballLeagueMatchAnalysis from './modules/analysis/footballLeagueMatchAnalysis';
 import footballSeasonCategoryAnalysis from './modules/analysis/footballSeasonCategoryAnalysis';
+import footballScoreAnalysis from './modules/analysis/footballScoreAnalysis';
 
 const store = new vuex.Store({
     modules: {
@@ -40,7 +41,8 @@ const store = new vuex.Store({
         matchSeasonCategoryCascader,
         footballIntegral,
         footballLeagueMatchAnalysis,
-        footballSeasonCategoryAnalysis
+        footballSeasonCategoryAnalysis,
+        footballScoreAnalysis
     }
 })
 

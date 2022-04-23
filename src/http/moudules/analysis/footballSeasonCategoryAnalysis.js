@@ -1,7 +1,7 @@
 import axios from '../../axios';
 
 /* 
- * 联赛分析管理模块
+ * 类别分析管理模块
  */
 export const findLeagueMatch = (params) => {
     return axios({

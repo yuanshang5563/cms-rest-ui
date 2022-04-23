@@ -47,7 +47,7 @@
 	<!--表格内容栏-->
 	<!--表格栏-->
 	<el-table :data="scoreList" :highlight-current-row="true"
-		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="false"
+		v-loading="loading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" >
 	<el-table-column type="index" width="60" label="序号" align="center"></el-table-column>
 	<el-table-column prop="round" label="轮次" align="center"></el-table-column>
@@ -65,14 +65,14 @@
 
 	<el-table-column :label="$t('action.operation')" width="600" fixed="right" header-align="center" align="center">
 		<template slot-scope="scope">
-			<kt-button :label="$t('action.view')" perms="ROLE_FOOTBALL_LEAGUE_MATCH_VIEW" :size="size" @click="handleView(scope.row)" />
+			<kt-button :label="$t('analysis.analysis')" perms="ROLE_FOOTBALL_SCORE_ANALYSIS_LIST" :size="size" @click="handleScoreAnalysis(scope.row)" />
 		</template>		
 	</el-table-column>
 	
 	</el-table>
 
 	<el-table :data="integralList" :highlight-current-row="true"
-		v-loading="integralLoading" :element-loading-text="$t('action.loading')" :border="false" :stripe="false"
+		v-loading="integralLoading" :element-loading-text="$t('action.loading')" :border="false" :stripe="true"
 		:show-overflow-tooltip="true" align="left" size="mini" style="width:100%;" v-if="integralList.length > 0">
 	<el-table-column type="index" :width="integralListWidth" label="序号" align="center"></el-table-column>
 	<el-table-column prop="teamName" label="球队" align="center"></el-table-column>
@@ -267,29 +267,30 @@ export default {
 			})
 		},		
 		initTableData: function () {
-			let scoreQueryParams = this.$store.state.footballSeasonCategoryAnalysis.scoreQueryParams;
-			if(null != scoreQueryParams){
-				this.leagueMatch = this.$store.state.footballSeasonCategoryAnalysis.leagueMatch;
-				this.seasonCategory = this.$store.state.footballSeasonCategoryAnalysis.seasonCategory;
-				this.seasonList = this.$store.state.footballSeasonCategoryAnalysis.seasonList;
-				this.seasonCategoryList = this.$store.state.footballSeasonCategoryAnalysis.seasonCategoryList;
-				this.scoreList = this.$store.state.footballSeasonCategoryAnalysis.scoreList;
-				this.integralList = this.$store.state.footballSeasonCategoryAnalysis.integralList;
-				//把参数也给设置上
-				this.initParams();
-			}
+			this.leagueMatch = this.$store.state.footballSeasonCategoryAnalysis.leagueMatch;
+			this.seasonCategory = this.$store.state.footballSeasonCategoryAnalysis.seasonCategory;
+			this.seasonList = this.$store.state.footballSeasonCategoryAnalysis.seasonList;
+			this.seasonCategoryList = this.$store.state.footballSeasonCategoryAnalysis.seasonCategoryList;
+			this.scoreList = this.$store.state.footballSeasonCategoryAnalysis.scoreList;
+			this.integralList = this.$store.state.footballSeasonCategoryAnalysis.integralList;
+			//把参数也给设置上
+			this.initParams();
 		},
 		initParams: function () {
-			let seasonQueryParams = this.$store.state.footballSeasonCategoryAnalysis.seasonQueryParams;
-			this.filters.footballLeagueMatchId = seasonQueryParams.footballLeagueMatchId;
+			//let seasonQueryParams = this.$store.state.footballSeasonCategoryAnalysis.seasonQueryParams;
+			//this.filters.footballLeagueMatchId = seasonQueryParams.footballLeagueMatchId;
 			let seasonCategoryQueryParams = this.$store.state.footballSeasonCategoryAnalysis.seasonCategoryQueryParams;
-			this.filters.footballSeasonId = seasonCategoryQueryParams.footballSeasonId;
+			if(null != seasonCategoryQueryParams){
+				this.filters.footballSeasonId = seasonCategoryQueryParams.footballSeasonId;
+			}
 			let scoreQueryParams = this.$store.state.footballSeasonCategoryAnalysis.scoreQueryParams;
-			this.filters.footballSeasonCategoryId = scoreQueryParams.footballSeasonCategoryId;
-			this.filters.round = scoreQueryParams.round;
+			if(null != scoreQueryParams){
+				this.filters.footballSeasonCategoryId = scoreQueryParams.footballSeasonCategoryId;
+				this.filters.round = scoreQueryParams.round;
+			}
 		},
-		findLeagueMatch: function (seasonParam) {
-			this.$api.footballSeasonCategoryAnalysis.findLeagueMatch(seasonParam).then((res) => {
+		findLeagueMatch: function (leagueMatchParam) {
+			this.$api.footballSeasonCategoryAnalysis.findLeagueMatch(leagueMatchParam).then((res) => {
 				this.leagueMatch = res.data;
 				//将数据保存到vuex
 				this.setSeasonCategoryAnalysisForLeagueMatchAsyn(res.data);
@@ -337,6 +338,10 @@ export default {
 		dateFormat: function (row, column, cellValue, index){
 			return formatDate(row[column.property])
 		},
+		// 打开该比分分析界面
+		handleScoreAnalysis: function (row) {
+			this.$router.push({path:'FootballScoreAnalysis',query:{footballScoreId:row.footballScoreId}});
+		},			
 		handleParams: function () {
 			let footballLeagueMatchId = this.$route.query.footballLeagueMatchId;
 			if(!isBlank(footballLeagueMatchId)){
